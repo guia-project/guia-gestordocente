@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Guía Docente</title>
+    
+    <style>
+        @page { size: A4; margin: 2.5cm; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11px; color: #333; line-height: 1.4; }
+        .salto-pagina { page-break-after: always; }
+        
+        .portada { text-align: center; margin-top: 80px; }
+        .portada img { width: 140px; height: auto; margin-bottom: 30px; }
+        .portada h1 { font-size: 26px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px; }
+        .portada h2 { font-size: 20px; color: #444; margin-bottom: 50px; }
+        .portada-info { font-size: 14px; color: #555; line-height: 1.8; margin-top: 40px; text-align: left; margin-left: 10%; margin-right: 10%; border-top: 1px solid #ccc; padding-top: 20px;}
+        .portada-info span { color: #222; font-weight: bold; }
+
+        .indice { margin-top: 40px; }
+        .indice h2 { font-size: 22px; margin-bottom: 30px; padding-bottom: 10px; }
+        .indice ul { list-style-type: none; padding: 0; font-size: 14px; }
+        .indice li { margin-bottom: 15px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; color: #444; font-weight: bold;}
+
+        .seccion { margin-bottom: 25px; page-break-inside: avoid; }
+        .seccion-titulo { color: white; padding: 6px 12px; font-weight: bold; font-size: 13px; margin-bottom: 12px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; page-break-inside: auto; }
+        tr { page-break-inside: avoid; page-break-after: auto; }
+        th, td { border: 1px solid #bdc3c7; padding: 6px 8px; text-align: left; vertical-align: top; }
+        th { background-color: #f4f6f9; font-weight: bold; }
+        .bloque-texto { margin-bottom: 15px; text-align: justify; }
+        .bloque-texto h4 { margin: 0 0 4px 0; font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
+        .bloque-texto p { margin: 0; white-space: pre-wrap; }
+        ul.lista-normal { margin: 5px 0 15px 0; padding-left: 20px; font-weight: normal; font-size: 11px;}
+        ul.lista-normal li { margin-bottom: 4px; border: none; padding: 0;}
+        
+        /* Sub-listas sin puntos para el cronograma */
+        ul.lista-cronograma { list-style-type: none; padding-left: 0; margin: 0; }
+        ul.lista-cronograma li { margin-bottom: 4px; border-bottom: 1px dashed #eee; padding-bottom: 4px;}
+        ul.lista-cronograma li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
+    </style>
+
+    <style th:utext="'.color-corporativo { color: ' + ${colorHex} + ' !important; } .fondo-corporativo { background-color: ' + ${colorHex} + ' !important; } .borde-corporativo { border-bottom: 3px solid ' + ${colorHex} + ' !important; }'"></style>
+</head>
+
+<body th:with="
+    hasProfesorado=${guia.profesorado != null and !guia.profesorado.isEmpty()},
+    hasConocimientos=${guia.otrosDatos != null and guia.otrosDatos.conocimientosPrevios != null and !guia.otrosDatos.conocimientosPrevios.isEmpty()},
+    hasCompObj=${guia.otrosDatos != null and ((guia.otrosDatos.competencias != null and !guia.otrosDatos.competencias.isEmpty()) or (guia.otrosDatos.objetivos != null and !guia.otrosDatos.objetivos.isEmpty()))},
+    hasTemario=${guia.otrosDatos != null and ((guia.otrosDatos.contenidos != null and !guia.otrosDatos.contenidos.isEmpty()) or not #strings.isEmpty(guia.otrosDatos.metodologia))},
+    hasCronograma=${guia.otrosDatos != null and guia.otrosDatos.cronograma != null and !guia.otrosDatos.cronograma.isEmpty()},
+    hasEvaluacion=${guia.otrosDatos != null and ((guia.otrosDatos.actividadesEvaluacion != null and !guia.otrosDatos.actividadesEvaluacion.isEmpty()) or not #strings.isEmpty(guia.otrosDatos.evaluacion) or not #strings.isEmpty(guia.otrosDatos.normasRealizacionPruebas) or not #strings.isEmpty(guia.otrosDatos.ausenciaMaxima))},
+    hasRecursos=${guia.otrosDatos != null and guia.otrosDatos.bibliografia != null and !guia.otrosDatos.bibliografia.isEmpty()},
+    hasOtraInfo=${guia.otrosDatos != null and not #strings.isEmpty(guia.otrosDatos.otraInformacion)}
+">
+
+    <div class="portada salto-pagina">
+        <img th:if="${not #strings.isEmpty(logoBase64)}" th:src="${logoBase64}" />
+        <h1 class="color-corporativo">Guía de Aprendizaje</h1>
+        <h2 th:text="${guia.datosGenerales.nombreAsignatura}"></h2>
+        <div class="portada-info">
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">Titulación: <span th:text="${guia.datosGenerales.titulacion}"></span></p>
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">Código de Asignatura: <span th:text="${guia.datosGenerales.codigoAsignatura}"></span></p>
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.curso)}">Curso Académico: <span th:text="${guia.datosGenerales.curso}"></span></p>
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.semestre)}">Semestre: <span th:text="${guia.datosGenerales.semestre}"></span></p>
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.centro)}">Centro: <span th:text="${guia.datosGenerales.centro}"></span></p>
+        </div>
+    </div>
+
+    <div class="indice salto-pagina">
+        <h2 class="color-corporativo borde-corporativo">Índice del Documento</h2>
+        <ul>
+            <li>1. Datos descriptivos de la asignatura</li>
+            <li th:if="${hasProfesorado}">2. Profesorado implicado</li>
+            <li th:if="${hasConocimientos}">3. Conocimientos previos recomendados</li>
+            <li th:if="${hasCompObj}">4. Competencias y resultados de aprendizaje</li>
+            <li th:if="${hasTemario}">5. Descripción de la asignatura y Temario</li>
+            <li th:if="${hasCronograma}">6. Cronograma</li>
+            <li th:if="${hasEvaluacion}">7. Actividades y criterios de evaluación</li>
+            <li th:if="${hasRecursos}">8. Recursos didácticos</li>
+            <li th:if="${hasOtraInfo}">9. Otra información</li>
+        </ul>
+    </div>
+
+    <div class="seccion">
+        <div class="seccion-titulo fondo-corporativo">1. Datos descriptivos de la asignatura</div>
+        <table>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">
+                <th class="color-corporativo" style="width: 30%;">Código:</th>
+                <td th:text="${guia.datosGenerales.codigoAsignatura}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.creditos)}">
+                <th class="color-corporativo" style="width: 30%;">Créditos ECTS:</th>
+                <td th:text="${guia.datosGenerales.creditos}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">
+                <th class="color-corporativo" style="width: 30%;">Titulación:</th>
+                <td th:text="${guia.datosGenerales.titulacion}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.curso)}">
+                <th class="color-corporativo" style="width: 30%;">Curso:</th>
+                <td th:text="${guia.datosGenerales.curso}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.semestre)}">
+                <th class="color-corporativo" style="width: 30%;">Semestre:</th>
+                <td th:text="${guia.datosGenerales.semestre}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.caracter)}">
+                <th class="color-corporativo" style="width: 30%;">Carácter:</th>
+                <td th:text="${guia.datosGenerales.caracter}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.modalidad)}">
+                <th class="color-corporativo" style="width: 30%;">Modalidad:</th>
+                <td th:text="${guia.datosGenerales.modalidad}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.idioma)}">
+                <th class="color-corporativo" style="width: 30%;">Idioma:</th>
+                <td th:text="${guia.datosGenerales.idioma}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.departamento)}">
+                <th class="color-corporativo" style="width: 30%;">Departamento:</th>
+                <td th:text="${guia.datosGenerales.departamento}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.area)}">
+                <th class="color-corporativo" style="width: 30%;">Área:</th>
+                <td th:text="${guia.datosGenerales.area}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.rama)}">
+                <th class="color-corporativo" style="width: 30%;">Materia / Rama:</th>
+                <td th:text="${guia.datosGenerales.rama}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.modulo)}">
+                <th class="color-corporativo" style="width: 30%;">Módulo:</th>
+                <td th:text="${guia.datosGenerales.modulo}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.centro)}">
+                <th class="color-corporativo" style="width: 30%;">Centro:</th>
+                <td th:text="${guia.datosGenerales.centro}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.periodo)}">
+                <th class="color-corporativo" style="width: 30%;">Período Impartición:</th>
+                <td th:text="${guia.datosGenerales.periodo}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.anioPlanEstudios)}">
+                <th class="color-corporativo" style="width: 30%;">Plan de Estudios (Año):</th>
+                <td th:text="${guia.datosGenerales.anioPlanEstudios}"></td>
+            </tr>
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.cursoImplantacion)}">
+                <th class="color-corporativo" style="width: 30%;">Curso Implantación:</th>
+                <td th:text="${guia.datosGenerales.cursoImplantacion}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="seccion" th:if="${hasProfesorado}">
+        <div class="seccion-titulo fondo-corporativo">2. Profesorado implicado</div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="color-corporativo" style="width: 25%;">Nombre</th>
+                    <th class="color-corporativo" style="width: 25%;">Contacto</th>
+                    <th class="color-corporativo" style="width: 25%;">Tutorías</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="prof : ${guia.profesorado}">
+                    <td th:text="${prof.nombre} + (${prof.esCoordinador} ? ' (Coord.)' : '')" style="font-weight: bold;"></td>
+                    <td th:text="${prof.email}"></td>
+                    <td th:text="${prof.horarioTutorias}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="seccion" th:if="${hasConocimientos}">
+        <div class="seccion-titulo fondo-corporativo">3. Conocimientos previos recomendados</div>
+        <div class="bloque-texto">
+            <ul class="lista-normal">
+                <li th:each="item : ${guia.otrosDatos.conocimientosPrevios}" th:text="${item}"></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="seccion" th:if="${hasCompObj}">
+        <div class="seccion-titulo fondo-corporativo">4. Competencias y resultados de aprendizaje</div>
+        <div class="bloque-texto" th:if="${guia.otrosDatos.competencias != null and !guia.otrosDatos.competencias.isEmpty()}">
+            <h4 class="color-corporativo">Competencias</h4>
+            <ul class="lista-normal">
+                <li th:each="comp : ${guia.otrosDatos.competencias}">
+                    <strong th:text="${comp.tipo} + ' [' + ${comp.codigo} + ']:'"></strong> <span th:text="${comp.descripcion}"></span>
+                </li>
+            </ul>
+        </div>
+        <div class="bloque-texto" th:if="${guia.otrosDatos.objetivos != null and !guia.otrosDatos.objetivos.isEmpty()}">
+            <h4 class="color-corporativo">Resultados de aprendizaje</h4>
+            <ul class="lista-normal">
+                <li th:each="item : ${guia.otrosDatos.objetivos}" th:text="${item}"></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="seccion" th:if="${hasTemario}">
+        <div class="seccion-titulo fondo-corporativo">5. Descripción de la asignatura y Temario</div>
+        <div class="bloque-texto" th:if="${not #strings.isEmpty(guia.otrosDatos.metodologia)}">
+            <h4 class="color-corporativo">Metodología Docente</h4>
+            <p th:text="${guia.otrosDatos.metodologia}"></p>
+        </div>
+        
+        <div class="bloque-texto" th:if="${guia.otrosDatos.contenidos != null and !guia.otrosDatos.contenidos.isEmpty()}">
+            <h4 class="color-corporativo">Temario</h4>
+            <ul style="list-style-type: none; padding-left: 10px;">
+                <li th:each="item : ${guia.otrosDatos.contenidos}" 
+                    th:style="'margin-bottom: 5px; margin-left: ' + (${item.nivel != null ? item.nivel : 0} * 25) + 'px; font-weight: ' + (${item.nivel == 0} ? 'bold' : 'normal') + ';'">
+                    <span th:text="${item.tema}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="seccion" th:if="${hasCronograma}">
+        <div class="seccion-titulo fondo-corporativo">6. Cronograma</div>
+        <div class="bloque-texto">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="color-corporativo" style="width: 10%; text-align: center;">Semana</th>
+                        <th class="color-corporativo" style="width: 75%;">Actividades</th>
+                        <th class="color-corporativo" style="width: 15%; text-align: center;">Horas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="fila : ${guia.otrosDatos.cronograma}">
+                        <td th:text="${fila.semana}" style="font-weight: bold; text-align: center; vertical-align: middle;"></td>
+                        <td>
+                            <ul class="lista-cronograma">
+                                <li th:each="act : ${fila.actividades}">
+                                    <strong th:text="'[' + ${act.tipo} + ']'" style="color: #555;"></strong> 
+                                    <span th:text="${act.descripcion}"></span>
+                                </li>
+                            </ul>
+                        </td>
+                        <td style="text-align: center; vertical-align: middle;">
+                            <ul class="lista-cronograma">
+                                <li th:each="act : ${fila.actividades}" th:text="${act.horas} + ' h'"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="seccion" th:if="${hasEvaluacion}">
+        <div class="seccion-titulo fondo-corporativo">7. Actividades y criterios de evaluación</div>
+        
+        <div class="bloque-texto" th:if="${guia.otrosDatos.actividadesEvaluacion != null and !guia.otrosDatos.actividadesEvaluacion.isEmpty()}">
+            <h4 class="color-corporativo">Actividades de Evaluación</h4>
+            <ul class="lista-normal">
+                <li th:each="act : ${guia.otrosDatos.actividadesEvaluacion}">
+                    <strong th:text="${act.nombre} + ' (' + ${act.tipo} + ' | Peso: ' + ${act.peso} + '% | Mín: ' + ${act.notaMinima} + '):'"></strong> 
+                    <span th:text="${act.descripcion}"></span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bloque-texto" th:if="${not #strings.isEmpty(guia.otrosDatos.evaluacion)}">
+            <h4 class="color-corporativo">Criterios de Evaluación</h4>
+            <p th:text="${guia.otrosDatos.evaluacion}"></p>
+        </div>
+        <div class="bloque-texto" th:if="${not #strings.isEmpty(guia.otrosDatos.normasRealizacionPruebas)}">
+            <h4 class="color-corporativo">Normas para la realización de pruebas</h4>
+            <p th:text="${guia.otrosDatos.normasRealizacionPruebas}"></p>
+        </div>
+    </div>
+
+    <div class="seccion" th:if="${hasRecursos}">
+        <div class="seccion-titulo fondo-corporativo">8. Recursos didácticos</div>
+        <div class="bloque-texto">
+            <ul class="lista-normal">
+                <li th:each="bib : ${guia.otrosDatos.bibliografia}">
+                    <strong th:text="'[' + ${bib.tipo} + '] '"></strong> <span th:text="${bib.referencia}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="seccion" th:if="${hasOtraInfo}">
+        <div class="seccion-titulo fondo-corporativo">9. Otra información</div>
+        <div class="bloque-texto"><p th:text="${guia.otrosDatos.otraInformacion}"></p></div>
+    </div>
+
+</body>
+</html>

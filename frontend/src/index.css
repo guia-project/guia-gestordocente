@@ -1,0 +1,198 @@
+/* ==========================================
+   1. ESTILOS BASE Y RESET
+   ========================================== */
+/* Aplicamos el "Modo Oscuro" por defecto a toda la página. 
+   Esto actúa como un "CSS Reset" suave para unificar el aspecto en todos los navegadores. */
+body {
+    background-color: #121212; /* Gris casi negro, mejor para la vista que el #000 puro */
+    color: #e0e0e0; /* Texto gris claro para reducir el contraste extremo y la fatiga visual */
+    margin: 0; /* Eliminamos los márgenes por defecto del navegador */
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; /* Suaviza los bordes de las tipografías en navegadores basados en WebKit (Chrome/Safari) */
+}
+
+/* --- PERSONALIZACIÓN DE LA BARRA DE SCROLL --- */
+/* Utilizamos pseudo-elementos con prefijo -webkit- para sobreescribir la barra gris nativa de Windows/Mac */
+::-webkit-scrollbar { 
+    width: 8px; /* Barra más fina y elegante */
+}
+::-webkit-scrollbar-track { 
+    background: #121212; /* Mismo color que el body para que se integre */
+}
+::-webkit-scrollbar-thumb { 
+    background: #444; 
+    border-radius: 4px; /* Bordes redondeados modernos */
+}
+::-webkit-scrollbar-thumb:hover { 
+    background: #3b82f6; /* Feedback visual: se vuelve azul al pasar el ratón */
+}
+
+/* ==========================================
+   2. CONTENEDORES PRINCIPALES (Layout)
+   ========================================== */
+/* Contenedor envolvente (Wrapper) para centrar el contenido en pantallas gigantes */
+.formulario-container {
+    background-color: #121212;
+    color: #e0e0e0;
+    max-width: 1200px; /* Evita que en monitores ultra-panorámicos la interfaz se estire demasiado */
+    margin: 0 auto; /* El truco clásico de CSS para centrar un bloque horizontalmente */
+    padding: 20px;
+    font-family: sans-serif;
+}
+
+/* Uso de Flexbox para apilar los elementos verticalmente con un espaciado uniforme */
+.formulario-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Crea un hueco de 15px entre cada hijo sin necesidad de usar margin-bottom */
+}
+
+/* Títulos y subtítulos: Jerarquía visual */
+.formulario-container h2, 
+.formulario-container h3 {
+    color: #e0e0e0;
+    border-bottom: 1px solid #333; /* Línea separadora sutil bajo los títulos */
+    padding-bottom: 10px;
+}
+
+/* ==========================================
+   3. FORMULARIOS: INPUTS Y TEXTAREAS
+   ========================================== */
+/* Estilos para las etiquetas de los campos */
+.formulario-container label {
+    color: #aaa !important;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase; /* Da un aspecto de "etiqueta técnica" (Badge) */
+    letter-spacing: 0.5px;
+    display: block; /* Fuerza a que la etiqueta ocupe su propia línea sobre el input */
+    margin-bottom: 5px;
+}
+
+/* Unificamos el estilo de todos los elementos interactivos de introducción de datos */
+.formulario-container input[type="text"],
+.formulario-container input[type="email"],
+.formulario-container input[type="number"],
+.formulario-container input[type="password"],
+.formulario-container textarea,
+.formulario-container select,
+.campo-input {
+    background-color: #2a2a2a !important; /* Gris ligeramente más claro que el fondo para que destaquen */
+    color: #fff !important;
+    border: 1px solid #333 !important;
+    border-radius: 6px;
+    padding: 10px 12px;
+    width: 100%;
+    box-sizing: border-box; /* CRÍTICO: Asegura que el padding no rompa el width: 100%, evitando scrolls horizontales */
+    transition: border 0.3s ease; /* Transición suave para cuando el usuario hace clic */
+    font-family: inherit; /* Hereda la tipografía 'Inter' del body en lugar de la del navegador por defecto */
+    margin-top: 5px;
+}
+
+/* --- ACCESIBILIDAD Y UX (Estado :focus) --- */
+/* Estilos aplicados exclusivamente cuando el usuario hace clic o navega con el tabulador al input */
+.formulario-container input:focus,
+.formulario-container textarea:focus,
+.formulario-container select:focus,
+.campo-input:focus {
+    border-color: #3b82f6 !important; /* Borde azul corporativo */
+    outline: none; /* Quitamos el borde negro/azul feo por defecto del navegador */
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* Efecto de "resplandor" o "halo" azul exterior */
+}
+
+/* ==========================================
+   4. MENSAJES DE ESTADO (Feedback Visual)
+   ========================================== */
+.mensaje-estado {
+    margin-bottom: 20px;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Uso de colores semánticos combinando RGBA para el fondo y HEX para el texto/borde */
+.mensaje-exito {
+    background-color: rgba(16, 185, 129, 0.1); /* Verde esmeralda con 10% de opacidad */
+    color: #10b981; /* Verde esmeralda sólido */
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.mensaje-error {
+    background-color: rgba(239, 68, 68, 0.1); /* Rojo con 10% de opacidad */
+    color: #ef4444; /* Rojo sólido */
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ==========================================
+   5. SECCIÓN PROFESORADO (Tarjetas UI)
+   ========================================== */
+.seccion-profesores {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #333;
+}
+
+/* Diseño de "Card" (Tarjeta) para agrupar visualmente la información de un profesor */
+.tarjeta-profesor {
+    border: 1px solid #333;
+    padding: 18px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #1e1e1e; /* Fondo oscuro específico para resaltar sobre el #121212 del body */
+}
+
+/* Flexbox para alinear el título del profesor a la izquierda y el botón de borrar a la derecha */
+.cabecera-profesor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fila-inputs {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Obliga a que dos columnas dentro de una .fila-inputs ocupen exactamente el 50% cada una */
+.columna-mitad {
+    flex: 1;
+}
+
+/* ==========================================
+   6. SISTEMA DE BOTONES
+   ========================================== */
+/* Botón secundario/peligro (Ghost Button) */
+.btn-eliminar {
+    background-color: transparent;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer; /* Cambia el cursor a la "manita" para indicar que es clickeable */
+    font-weight: bold;
+    transition: all 0.2s ease; /* Anima cualquier cambio de color de fondo o texto al hacer hover */
+}
+
+/* Estado invertido al pasar el ratón */
+.btn-eliminar:hover {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+/* Botón de acción principal (Call to Action) */
+.btn-primario {
+    background-color: #3b82f6;
+    color: white;
+    border: none; /* Los botones primarios suelen ser sólidos, sin borde */
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primario:hover {
+    background-color: #2563eb; /* Se oscurece ligeramente para dar sensación de profundidad al pulsarlo */
+}

@@ -1,0 +1,4 @@
+server.port=8080
+spring.data.mongodb.uri=PON_AQUI_TU_URL_DE_MONGO
+openai.api.key=PON_AQUI_TU_CLAVE_DE_OPENAI
+jwt.secret=PON_AQUI_TU_CLAVE_SECRETA_JWT
