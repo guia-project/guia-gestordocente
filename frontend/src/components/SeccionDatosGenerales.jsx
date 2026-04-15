@@ -45,7 +45,7 @@ export default function SeccionDatosGenerales({ datos, onChange }) {
                     onMouseOver={(e) => { e.target.style.backgroundColor = '#3b82f6'; e.target.style.borderColor = '#3b82f6'; e.target.style.color = 'white'; }}
                     onMouseOut={(e) => { e.target.style.backgroundColor = '#2a2a2a'; e.target.style.borderColor = '#444'; e.target.style.color = '#e0e0e0'; }}
                 >
-                    ✏️ Editar Datos
+                    ✏️ Editar
                 </button>
             </div>
 

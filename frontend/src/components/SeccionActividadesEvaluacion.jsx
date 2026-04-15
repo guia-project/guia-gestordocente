@@ -28,7 +28,7 @@ export default function SeccionActividadesEvaluacion({ actividades, onActividadC
                     onClick={() => setModalAbierto(true)} 
                     style={{ backgroundColor: '#2a2a2a', color: '#e0e0e0', border: '1px solid #444', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
                 >
-                    ✏️ Editar Evaluación
+                    ✏️ Editar
                 </button>
             </div>
 

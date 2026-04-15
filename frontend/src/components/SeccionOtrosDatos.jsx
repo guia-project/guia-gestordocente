@@ -66,7 +66,7 @@ export default function SeccionOtrosDatos({ datos, onChange }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '15px' }}>
                 <h3 style={{ margin: 0, color: '#3b82f6', fontSize: '18px' }}>Metodología y Evaluación</h3>
                 <button type="button" onClick={() => setModalAbierto(true)} style={{ backgroundColor: '#2a2a2a', color: '#e0e0e0', border: '1px solid #444', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}>
-                    ✏️ Editar Textos
+                    ✏️ Editar
                 </button>
             </div>
 
