@@ -44,8 +44,10 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
 
     const [competencias, setCompetencias] = useState([{ tipo: 'General', codigo: '', descripcion: '' }]);
     const [actividadesEvaluacion, setActividadesEvaluacion] = useState([{ nombre: '', descripcion: '', tipo: 'Progresiva', peso: '', notaMinima: '' }]);
-    const [conocimientos, setConocimientos] = useState(['']);
-    const [objetivos, setObjetivos] = useState(['']);
+    
+    // ACTUALIZACIÓN JERÁRQUICA: Ahora son objetos, no strings planos.
+    const [conocimientos, setConocimientos] = useState([{ texto: '', nivel: 0 }]);
+    const [objetivos, setObjetivos] = useState([{ texto: '', nivel: 0 }]);
     
     const [contenidos, setContenidos] = useState([{ tema: '', nivel: 0 }]);
     const [bibliografia, setBibliografia] = useState([{ tipo: 'Libro', referencia: '' }]);
@@ -114,8 +116,27 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 otraInformacion: od.otraInformacion || od["Otra información"] || ''
             });
 
-            setConocimientos(od["Conocimientos previos recomendados"] || od.conocimientosPrevios || ['']);
-            setObjetivos(od["Objetivos"] || od.objetivos || ['']);
+            // Normalización Jerárquica: Conocimientos
+            const conocs = od["Conocimientos previos recomendados"] || od.conocimientosPrevios;
+            if (conocs && conocs.length > 0) {
+                setConocimientos(conocs.map(c => {
+                    if (typeof c === 'string') return { texto: c, nivel: 0 };
+                    return { texto: c.texto || c["Texto"] || '', nivel: c.nivel !== undefined ? c.nivel : (c["Nivel"] || 0) };
+                }));
+            } else {
+                setConocimientos([{ texto: '', nivel: 0 }]);
+            }
+
+            // Normalización Jerárquica: Objetivos
+            const objs = od["Objetivos"] || od.objetivos;
+            if (objs && objs.length > 0) {
+                setObjetivos(objs.map(o => {
+                    if (typeof o === 'string') return { texto: o, nivel: 0 };
+                    return { texto: o.texto || o["Texto"] || '', nivel: o.nivel !== undefined ? o.nivel : (o["Nivel"] || 0) };
+                }));
+            } else {
+                setObjetivos([{ texto: '', nivel: 0 }]);
+            }
             
             const conts = od["Contenidos"] || od.contenidos;
             if (conts && conts.length > 0) {
@@ -203,8 +224,13 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 ausenciaMaxima: od["Ausencia máxima"] || '', otraInformacion: od["Otra información"] || ''
             });
 
-            if (Array.isArray(od["Conocimientos previos recomendados"])) setConocimientos(od["Conocimientos previos recomendados"]);
-            if (Array.isArray(od["Objetivos"])) setObjetivos(od["Objetivos"]);
+            // Mapeos Jerárquicos de IA
+            if (Array.isArray(od["Conocimientos previos recomendados"])) {
+                setConocimientos(od["Conocimientos previos recomendados"].map(c => ({ texto: c["Texto"] || c || '', nivel: c["Nivel"] || 0 })));
+            }
+            if (Array.isArray(od["Objetivos"])) {
+                setObjetivos(od["Objetivos"].map(o => ({ texto: o["Texto"] || o || '', nivel: o["Nivel"] || 0 })));
+            }
             
             if (Array.isArray(od["Contenidos"])) {
                 setContenidos(od["Contenidos"].map(c => ({ tema: c["Tema"] || '', nivel: c["Nivel"] || 0 })));
@@ -239,12 +265,12 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
     const agregarProfesor = () => setProfesores([...profesores, { Nombre: '', Email: '', Telefono: '', Despacho: '', HorarioTutorias: '', UrlWeb: '', Grupo: '', esCoordinador: false }]);
     const eliminarProfesor = (index) => setProfesores(profesores.filter((_, i) => i !== index));
 
-    const handleListaChange = (setter, lista, index, valor) => {
+    // NUEVO HANDLER JERÁRQUICO
+    const handleListaChange = (setter, lista, index, campo, valor) => {
         const nueva = [...lista];
-        nueva[index] = valor;
+        nueva[index] = { ...nueva[index], [campo]: valor };
         setter(nueva);
     };
-    const agregarLista = (setter, lista) => setter([...lista, '']);
     const eliminarLista = (setter, lista, index) => setter(lista.filter((_, i) => i !== index));
 
     const handleTemarioChange = (index, campo, valor) => {
@@ -325,8 +351,9 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 "Horario tutorías": p.HorarioTutorias, "URL web": p.UrlWeb, "Grupo": p.Grupo, "Es coordinador": p.esCoordinador
             })),
             "Otros Datos": {
-                "Conocimientos previos recomendados": conocimientos.filter(item => item.trim() !== ''),
-                "Objetivos": objetivos.filter(item => item.trim() !== ''),
+                // Sanitización de objetos jerárquicos
+                "Conocimientos previos recomendados": conocimientos.filter(item => item.texto && item.texto.trim() !== '').map(item => ({ "Texto": item.texto, "Nivel": item.nivel })),
+                "Objetivos": objetivos.filter(item => item.texto && item.texto.trim() !== '').map(item => ({ "Texto": item.texto, "Nivel": item.nivel })),
                 "Contenidos": contenidos.filter(t => t.tema.trim() !== '').map(t => ({ "Tema": t.tema, "Nivel": t.nivel })),
                 "Metodología": otrosDatos.metodologia,
                 "Evaluación": otrosDatos.evaluacion,
@@ -347,7 +374,6 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
             }
         };
 
-        // Parametrización de la URL
         const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
         const url = idEdicion ? `${baseUrl}/api/guias/editar/${idEdicion}` : `${baseUrl}/api/guias/crear`;
         const method = idEdicion ? 'PUT' : 'POST';
@@ -388,17 +414,23 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 <SeccionDatosGenerales datos={datosGenerales} onChange={handleChangeGenerales} />
                 <SeccionProfesorado profesores={profesores} onProfesorChange={handleProfesorChange} onAgregar={agregarProfesor} onEliminar={eliminarProfesor} />
                 
-                <SeccionListasSimples titulo="Conocimientos Previos Recomendados" items={conocimientos}
-                    onCambio={(index, valor) => handleListaChange(setConocimientos, conocimientos, index, valor)}
-                    onAgregar={() => agregarLista(setConocimientos, conocimientos)}
-                    onEliminar={(index) => eliminarLista(setConocimientos, conocimientos, index)} />
+                <SeccionListasSimples 
+                    titulo="Conocimientos Previos Recomendados" 
+                    items={conocimientos}
+                    onCambio={(index, campo, valor) => handleListaChange(setConocimientos, conocimientos, index, campo, valor)}
+                    onAgregar={() => setConocimientos([...conocimientos, { texto: '', nivel: 0 }])}
+                    onEliminar={(index) => eliminarLista(setConocimientos, conocimientos, index)} 
+                />
                 
                 <SeccionCompetencias competencias={competencias} onCompetenciaChange={handleCompetenciaChange} onAgregar={agregarCompetencia} onEliminar={eliminarCompetencia} />
                 
-                <SeccionListasSimples titulo="Objetivos" items={objetivos}
-                    onCambio={(index, valor) => handleListaChange(setObjetivos, objetivos, index, valor)}
-                    onAgregar={() => agregarLista(setObjetivos, objetivos)}
-                    onEliminar={(index) => eliminarLista(setObjetivos, objetivos, index)} />
+                <SeccionListasSimples 
+                    titulo="Objetivos" 
+                    items={objetivos}
+                    onCambio={(index, campo, valor) => handleListaChange(setObjetivos, objetivos, index, campo, valor)}
+                    onAgregar={() => setObjetivos([...objetivos, { texto: '', nivel: 0 }])}
+                    onEliminar={(index) => eliminarLista(setObjetivos, objetivos, index)} 
+                />
                 
                 <SeccionTemario 
                     temas={contenidos} 
@@ -410,7 +442,9 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 <SeccionCronograma cronograma={cronograma} onSemanaChange={handleSemanaChange} onActividadChange={handleActividadCronoChange} onAgregarSemana={agregarSemanaCronograma} onEliminarSemana={eliminarSemanaCronograma} onAgregarActividad={agregarActividadCrono} onEliminarActividad={eliminarActividadCrono} />
                 
                 <SeccionActividadesEvaluacion actividades={actividadesEvaluacion} onActividadChange={handleActividadChange} onAgregar={agregarActividad} onEliminar={eliminarActividad} />
+                
                 <SeccionOtrosDatos datos={otrosDatos} onChange={handleChangeOtrosDatos} />
+                
                 <SeccionBibliografia bibliografia={bibliografia} onCambio={handleBiblioChange} onAgregar={agregarBiblio} onEliminar={eliminarBiblio} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '40px' }}>

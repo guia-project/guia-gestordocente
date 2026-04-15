@@ -35,3 +35,4 @@ build/
 # SECRETOS
 .env
 application-secret.properties
+.vscode/

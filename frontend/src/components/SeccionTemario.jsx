@@ -52,7 +52,8 @@ export default function SeccionTemario({ temas, onChange, onAgregar, onEliminar 
                             key={index} 
                             style={{ 
                                 marginLeft: `${item.nivel * 25}px`, 
-                                color: item.nivel === 0 ? '#3b82f6' : '#e0e0e0', 
+                                /* CAMBIO AQUÍ: Nivel 0 ahora es #ffffff (Blanco puro), el resto #e0e0e0 (Gris clarito) */
+                                color: item.nivel === 0 ? '#ffffff' : '#e0e0e0', 
                                 fontSize: item.nivel === 0 ? '16px' : '14px', 
                                 fontWeight: item.nivel === 0 ? 'bold' : 'normal', 
                                 borderBottom: item.nivel === 0 ? '1px solid #444' : 'none', 
@@ -71,11 +72,9 @@ export default function SeccionTemario({ temas, onChange, onAgregar, onEliminar 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     
                     {/* Alerta de instrucciones para el usuario */}
-                    <div style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '12px', borderRadius: '6px', marginBottom: '10px' }}>
-                        <p style={{ margin: 0, color: '#3b82f6', fontSize: '13px', lineHeight: '1.5' }}>
-                            💡 <strong>Consejo:</strong> Utiliza los botones <strong>&lt;</strong> y <strong>&gt;</strong> para estructurar el temario. Los elementos alineados a la izquierda serán los <strong>Temas Principales</strong>, y los que muevas a la derecha serán sus <strong>Subtemas</strong>.
-                        </p>
-                    </div>
+                    <p style={{ color: '#3b82f6', fontSize: '13px', marginBottom: '10px' }}>
+                        💡 Usa <strong>{"<"}</strong> y <strong>{">"}</strong> para organizar los elementos en sub-puntos.
+                    </p>
 
                     {temas.map((item, index) => (
                         <div key={index} style={{ 
