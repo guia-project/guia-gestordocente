@@ -5,10 +5,16 @@
     <title>Guía Docente</title>
     
     <style>
+        /* --- ESTILOS DE IMPRESIÓN (PRINT CSS) --- */
+        /* Configura el tamaño del lienzo PDF a A4 estándar con márgenes generosos */
         @page { size: A4; margin: 2.5cm; }
+        
         body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11px; color: #333; line-height: 1.4; }
+        
+        /* Forzar un salto de página real en el PDF */
         .salto-pagina { page-break-after: always; }
         
+        /* --- ESTILOS DE LA PORTADA --- */
         .portada { text-align: center; margin-top: 80px; }
         .portada img { width: 140px; height: auto; margin-bottom: 30px; }
         .portada h1 { font-size: 26px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px; }
@@ -16,24 +22,29 @@
         .portada-info { font-size: 14px; color: #555; line-height: 1.8; margin-top: 40px; text-align: left; margin-left: 10%; margin-right: 10%; border-top: 1px solid #ccc; padding-top: 20px;}
         .portada-info span { color: #222; font-weight: bold; }
 
+        /* --- ESTILOS DEL ÍNDICE --- */
         .indice { margin-top: 40px; }
         .indice h2 { font-size: 22px; margin-bottom: 30px; padding-bottom: 10px; }
         .indice ul { list-style-type: none; padding: 0; font-size: 14px; }
         .indice li { margin-bottom: 15px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; color: #444; font-weight: bold;}
 
+        /* --- ESTILOS DE SECCIONES Y TABLAS --- */
+        /* page-break-inside: avoid evita que una sección se parta por la mitad entre dos páginas */
         .seccion { margin-bottom: 25px; page-break-inside: avoid; }
         .seccion-titulo { color: white; padding: 6px 12px; font-weight: bold; font-size: 13px; margin-bottom: 12px; text-transform: uppercase; }
+        
         table { width: 100%; border-collapse: collapse; margin-bottom: 15px; page-break-inside: auto; }
         tr { page-break-inside: avoid; page-break-after: auto; }
         th, td { border: 1px solid #bdc3c7; padding: 6px 8px; text-align: left; vertical-align: top; }
         th { background-color: #f4f6f9; font-weight: bold; }
+        
         .bloque-texto { margin-bottom: 15px; text-align: justify; }
         .bloque-texto h4 { margin: 0 0 4px 0; font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
         .bloque-texto p { margin: 0; white-space: pre-wrap; }
+        
         ul.lista-normal { margin: 5px 0 15px 0; padding-left: 20px; font-weight: normal; font-size: 11px;}
         ul.lista-normal li { margin-bottom: 4px; border: none; padding: 0;}
         
-        /* Sub-listas sin puntos para el cronograma */
         ul.lista-cronograma { list-style-type: none; padding-left: 0; margin: 0; }
         ul.lista-cronograma li { margin-bottom: 4px; border-bottom: 1px dashed #eee; padding-bottom: 4px;}
         ul.lista-cronograma li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
@@ -55,8 +66,10 @@
 
     <div class="portada salto-pagina">
         <img th:if="${not #strings.isEmpty(logoBase64)}" th:src="${logoBase64}" />
+        
         <h1 class="color-corporativo">Guía de Aprendizaje</h1>
         <h2 th:text="${guia.datosGenerales.nombreAsignatura}"></h2>
+        
         <div class="portada-info">
             <p th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">Titulación: <span th:text="${guia.datosGenerales.titulacion}"></span></p>
             <p th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">Código de Asignatura: <span th:text="${guia.datosGenerales.codigoAsignatura}"></span></p>
