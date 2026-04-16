@@ -2,6 +2,9 @@ package es.guiasdocentes.backend.dto;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import es.guiasdocentes.backend.ItemTemaNivel;
+import es.guiasdocentes.backend.ItemTextoNivel;
 import lombok.Data;
 
 @Data
@@ -9,13 +12,13 @@ public class OtrosDatosDto {
 
     // AHORA SON LISTAS SIMPLES
     @JsonProperty("Conocimientos previos recomendados")
-    private List<String> conocimientosPrevios;
+    private List<ItemTextoNivel> conocimientosPrevios;
 
     @JsonProperty("Objetivos")
-    private List<String> objetivos;
+    private List<ItemTextoNivel> objetivos;
 
     @JsonProperty("Contenidos")
-    private List<TemaDto> contenidos;
+    private List<ItemTemaNivel> contenidos;
 
     @JsonProperty("Metodología")
     private String metodologia;

@@ -378,17 +378,30 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
         const url = idEdicion ? `${baseUrl}/api/guias/editar/${idEdicion}` : `${baseUrl}/api/guias/crear`;
         const method = idEdicion ? 'PUT' : 'POST';
 
+        // RECUPERAMOS EL TOKEN Y LO INYECTAMOS
+        const token = localStorage.getItem('token');
+
         try {
-            const response = await fetch(url, { method: method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const response = await fetch(url, { 
+                method: method, 
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                }, 
+                body: JSON.stringify(payload) 
+            });
+            
             if (response.ok) {
-                setEstadoEnvio(idEdicion ? '¡Guía actualizada con éxito!' : '¡Guía guardada con éxito!');
-                if (limpiarEdicion) limpiarEdicion();
+                setEstadoEnvio(idEdicion ? '✅ ¡Guía actualizada con éxito!' : '✅ ¡Guía guardada con éxito!');
+                setTimeout(() => {
+                    if (limpiarEdicion) limpiarEdicion();
+                }, 1500);
             } else {
-                setEstadoEnvio('Error al guardar la guía.');
+                setEstadoEnvio('❌ Error al guardar la guía. Comprueba la conexión o tus permisos.');
             }
         } catch (error) {
             console.error(error);
-            setEstadoEnvio('Error de conexión al servidor.');
+            setEstadoEnvio('❌ Error crítico de conexión al servidor.');
         }
     };
 
@@ -448,6 +461,22 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 <SeccionBibliografia bibliografia={bibliografia} onCambio={handleBiblioChange} onAgregar={agregarBiblio} onEliminar={eliminarBiblio} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '40px' }}>
+                    
+                    {/* CARTEL DE ESTADO VISUAL AÑADIDO AQUÍ */}
+                    {estadoEnvio && (
+                        <div style={{ 
+                            padding: '12px', 
+                            borderRadius: '8px', 
+                            textAlign: 'center', 
+                            fontWeight: 'bold',
+                            backgroundColor: estadoEnvio.includes('❌') ? '#fee2e2' : (estadoEnvio.includes('✅') ? '#d1fae5' : '#1e293b'),
+                            color: estadoEnvio.includes('❌') ? '#b91c1c' : (estadoEnvio.includes('✅') ? '#047857' : '#38bdf8'),
+                            border: `1px solid ${estadoEnvio.includes('❌') ? '#f87171' : (estadoEnvio.includes('✅') ? '#34d399' : '#0ea5e9')}`
+                        }}>
+                            {estadoEnvio}
+                        </div>
+                    )}
+
                     <button type="submit" style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '16px 24px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px', transition: 'all 0.2s ease', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1)' }} onMouseOver={(e) => { e.target.style.backgroundColor = '#2563eb'; e.target.style.transform = 'translateY(-2px)'; }} onMouseOut={(e) => { e.target.style.backgroundColor = '#3b82f6'; e.target.style.transform = 'translateY(0)'; }}>
                         {idEdicion ? '💾 Actualizar Guía en Base de Datos' : '💾 Guardar Guía en Base de Datos'}
                     </button>
