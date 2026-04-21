@@ -6,7 +6,6 @@
     
     <style>
         /* --- ESTILOS DE IMPRESIÓN (PRINT CSS) --- */
-        /* Configura el tamaño del lienzo PDF a A4 estándar con márgenes generosos */
         @page { size: A4; margin: 2.5cm; }
         
         body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11px; color: #333; line-height: 1.4; }
@@ -29,7 +28,6 @@
         .indice li { margin-bottom: 15px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; color: #444; font-weight: bold;}
 
         /* --- ESTILOS DE SECCIONES Y TABLAS --- */
-        /* page-break-inside: avoid evita que una sección se parta por la mitad entre dos páginas */
         .seccion { margin-bottom: 25px; page-break-inside: avoid; }
         .seccion-titulo { color: white; padding: 6px 12px; font-weight: bold; font-size: 13px; margin-bottom: 12px; text-transform: uppercase; }
         
@@ -66,10 +64,8 @@
 
     <div class="portada salto-pagina">
         <img th:if="${not #strings.isEmpty(logoBase64)}" th:src="${logoBase64}" />
-        
         <h1 class="color-corporativo">Guía de Aprendizaje</h1>
         <h2 th:text="${guia.datosGenerales.nombreAsignatura}"></h2>
-        
         <div class="portada-info">
             <p th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">Titulación: <span th:text="${guia.datosGenerales.titulacion}"></span></p>
             <p th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">Código de Asignatura: <span th:text="${guia.datosGenerales.codigoAsignatura}"></span></p>
@@ -188,7 +184,7 @@
         <div class="seccion-titulo fondo-corporativo">3. Conocimientos previos recomendados</div>
         <div class="bloque-texto">
             <ul class="lista-normal">
-                <li th:each="item : ${guia.otrosDatos.conocimientosPrevios}" th:text="${item}"></li>
+                <li th:each="item : ${guia.otrosDatos.conocimientosPrevios}" th:text="${item.texto}"></li>
             </ul>
         </div>
     </div>
@@ -206,7 +202,7 @@
         <div class="bloque-texto" th:if="${guia.otrosDatos.objetivos != null and !guia.otrosDatos.objetivos.isEmpty()}">
             <h4 class="color-corporativo">Resultados de aprendizaje</h4>
             <ul class="lista-normal">
-                <li th:each="item : ${guia.otrosDatos.objetivos}" th:text="${item}"></li>
+                <li th:each="item : ${guia.otrosDatos.objetivos}" th:text="${item.texto}"></li>
             </ul>
         </div>
     </div>
@@ -268,9 +264,13 @@
         <div class="bloque-texto" th:if="${guia.otrosDatos.actividadesEvaluacion != null and !guia.otrosDatos.actividadesEvaluacion.isEmpty()}">
             <h4 class="color-corporativo">Actividades de Evaluación</h4>
             <ul class="lista-normal">
-                <li th:each="act : ${guia.otrosDatos.actividadesEvaluacion}">
+                <li th:each="act : ${guia.otrosDatos.actividadesEvaluacion}" style="margin-bottom: 10px;">
                     <strong th:text="${act.nombre} + ' (' + ${act.tipo} + ' | Peso: ' + ${act.peso} + '% | Mín: ' + ${act.notaMinima} + '):'"></strong> 
                     <span th:text="${act.descripcion}"></span>
+                    
+                    <div th:if="${not #strings.isEmpty(act.competencias)}" style="margin-top: 3px; font-size: 10px; color: #555; font-style: italic;">
+                        Competencias evaluadas: <span th:text="${act.competencias}"></span>
+                    </div>
                 </li>
             </ul>
         </div>

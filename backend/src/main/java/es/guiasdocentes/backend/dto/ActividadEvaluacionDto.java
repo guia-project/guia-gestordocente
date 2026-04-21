@@ -18,4 +18,7 @@ public class ActividadEvaluacionDto {
 
     @JsonProperty("Nota mínima")
     private String notaMinima;
+
+    @JsonProperty("Competencias")
+    private String competencias;
 }

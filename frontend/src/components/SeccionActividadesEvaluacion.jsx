@@ -4,10 +4,10 @@ import Modal from './Modal';
 /**
  * Componente UI responsable de visualizar y editar el sistema de evaluación de la asignatura.
  * Gestiona un array de objetos complejos donde cada actividad tiene su peso porcentual, 
- * tipo de evaluación y requisitos mínimos.
+ * tipo de evaluación, requisitos mínimos y competencias asociadas.
  *
  * @param {Object} props - Propiedades inyectadas mediante Elevación de Estado (Lifting State Up).
- * @param {Array} props.actividades - Lista de actividades. Ej: [{ nombre: "Examen", tipo: "Global", peso: "60", notaMinima: "5" }]
+ * @param {Array} props.actividades - Lista de actividades. Ej: [{ nombre: "Examen", tipo: "Global", peso: "60", notaMinima: "5", competencias: "CB1" }]
  * @param {function} props.onActividadChange - Callback ejecutado al modificar cualquier campo de una actividad.
  * @param {function} props.onAgregar - Callback para añadir una nueva actividad vacía al array.
  * @param {function} props.onEliminar - Callback para eliminar una actividad según su posición (índice).
@@ -54,9 +54,16 @@ export default function SeccionActividadesEvaluacion({ actividades, onActividadC
                                 </span>
                             </div>
                         </div>
-                        <span style={{ color: '#e0e0e0', fontSize: '14px', lineHeight: '1.5', display: 'block' }}>
+                        <span style={{ color: '#e0e0e0', fontSize: '14px', lineHeight: '1.5', display: 'block', marginBottom: act.competencias ? '8px' : '0' }}>
                             {act.descripcion || <span style={{fontStyle:'italic', color:'#555'}}>Sin descripción</span>}
                         </span>
+                        
+                        {/* NUEVO: Visualización de las competencias en la vista previa */}
+                        {act.competencias && (
+                            <span style={{ color: '#10b981', fontSize: '12px', display: 'inline-block', backgroundColor: '#064e3b', padding: '4px 8px', borderRadius: '4px', border: '1px solid #059669' }}>
+                                🎯 Competencias: {act.competencias}
+                            </span>
+                        )}
                     </div>
                 ))}
             </div>
@@ -98,6 +105,13 @@ export default function SeccionActividadesEvaluacion({ actividades, onActividadC
                                 <label style={{ display: 'block', color: '#aaa', fontSize: '11px', textTransform: 'uppercase', marginBottom: '5px' }}>Descripción</label>
                                 <textarea name="descripcion" value={act.descripcion} onChange={(e) => onActividadChange(index, e)} rows="2" style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #333', backgroundColor: '#1e1e1e', color: '#fff', resize: 'vertical' }} />
                             </div>
+
+                            {/* Campo para las competencias */}
+                            <div>
+                                <label style={{ display: 'block', color: '#aaa', fontSize: '11px', textTransform: 'uppercase', marginBottom: '5px' }}>Competencias</label>
+                                <textarea name="competencias" value={act.competencias || ''} onChange={(e) => onActividadChange(index, e)} rows="1" style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #333', backgroundColor: '#1e1e1e', color: '#10b981', resize: 'vertical' }} />
+                            </div>
+
                         </div>
                     ))}
                     <button type="button" onClick={onAgregar} style={{ backgroundColor: '#10b981', color: 'white', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>

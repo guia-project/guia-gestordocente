@@ -43,7 +43,7 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
     }]);
 
     const [competencias, setCompetencias] = useState([{ tipo: 'General', codigo: '', descripcion: '' }]);
-    const [actividadesEvaluacion, setActividadesEvaluacion] = useState([{ nombre: '', descripcion: '', tipo: 'Progresiva', peso: '', notaMinima: '' }]);
+    const [actividadesEvaluacion, setActividadesEvaluacion] = useState([{ nombre: '', descripcion: '', competencias: '', tipo: 'Progresiva', peso: '', notaMinima: '' }]);
     
     // ACTUALIZACIÓN JERÁRQUICA: Ahora son objetos, no strings planos.
     const [conocimientos, setConocimientos] = useState([{ texto: '', nivel: 0 }]);
@@ -165,12 +165,13 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 setActividadesEvaluacion(acts.map(a => ({ 
                     nombre: a["Nombre"] || a.nombre || '', 
                     descripcion: a["Descripción"] || a.descripcion || '',
+                    competencias: a["Competencias"] || a.competencias || '', 
                     tipo: a["Tipo"] || a.tipo || 'Progresiva',
                     peso: a["Peso"] || a.peso || '',
                     notaMinima: a["Nota mínima"] || a.notaMinima || ''
                 })));
             } else {
-                setActividadesEvaluacion([{ nombre: '', descripcion: '', tipo: 'Progresiva', peso: '', notaMinima: '' }]);
+                setActividadesEvaluacion([{ nombre: '', descripcion: '', competencias: '', tipo: 'Progresiva', peso: '', notaMinima: '' }]);
             }
 
             const crono = od["Cronograma"] || od.cronograma;
@@ -240,7 +241,7 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
             if (Array.isArray(od["Competencias"])) setCompetencias(od["Competencias"].map(c => ({ tipo: c["Tipo"] || 'General', codigo: c["Código"] || '', descripcion: c["Descripción"] || '' })));
             if (Array.isArray(od["Actividades de evaluación"])) {
                 setActividadesEvaluacion(od["Actividades de evaluación"].map(a => ({ 
-                    nombre: a["Nombre"] || '', descripcion: a["Descripción"] || '', tipo: a["Tipo"] || 'Progresiva', peso: a["Peso"] || '', notaMinima: a["Nota mínima"] || '' 
+                    nombre: a["Nombre"] || '', descripcion: a["Descripción"] || '', competencias: a["Competencias"] || '', tipo: a["Tipo"] || 'Progresiva', peso: a["Peso"] || '', notaMinima: a["Nota mínima"] || '' 
                 })));
             }
             if (Array.isArray(od["Cronograma"])) {
@@ -293,7 +294,7 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
         nuevas[index][name] = value;
         setActividadesEvaluacion(nuevas);
     };
-    const agregarActividad = () => setActividadesEvaluacion([...actividadesEvaluacion, { nombre: '', descripcion: '', tipo: 'Progresiva', peso: '', notaMinima: '' }]);
+    const agregarActividad = () => setActividadesEvaluacion([...actividadesEvaluacion, { nombre: '', descripcion: '', competencias: '', tipo: 'Progresiva', peso: '', notaMinima: '' }]);
     const eliminarActividad = (index) => setActividadesEvaluacion(actividadesEvaluacion.filter((_, i) => i !== index));
 
     const handleCompetenciaChange = (index, event) => {
@@ -363,7 +364,7 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 "Bibliografía": bibliografia.filter(b => b.referencia.trim() !== '').map(b => ({ "Tipo": b.tipo, "Referencia": b.referencia })),
                 "Competencias": competencias.filter(c => c.descripcion.trim() !== '' || c.codigo.trim() !== '').map(c => ({ "Tipo": c.tipo, "Código": c.codigo, "Descripción": c.descripcion })),
                 "Actividades de evaluación": actividadesEvaluacion.filter(a => a.nombre.trim() !== '').map(a => ({ 
-                    "Nombre": a.nombre, "Descripción": a.descripcion, "Tipo": a.tipo, "Peso": a.peso, "Nota mínima": a.notaMinima 
+                    "Nombre": a.nombre, "Descripción": a.descripcion, "Competencias": a.competencias, "Tipo": a.tipo, "Peso": a.peso, "Nota mínima": a.notaMinima 
                 })),
                 "Cronograma": cronograma.filter(c => c.semana.trim() !== '').map(c => ({ 
                     "Semana": c.semana, 
