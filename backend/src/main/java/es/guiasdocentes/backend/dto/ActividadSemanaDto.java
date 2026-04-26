@@ -4,6 +4,9 @@ import lombok.Data;
 
 @Data
 public class ActividadSemanaDto {
+    @JsonProperty("Clasificación")
+    private String clasificacion;
+
     @JsonProperty("Tipo")
     private String tipo;
 

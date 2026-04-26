@@ -44,14 +44,18 @@
         ul.lista-normal li { margin-bottom: 4px; border: none; padding: 0;}
         
         ul.lista-cronograma { list-style-type: none; padding-left: 0; margin: 0; }
-        ul.lista-cronograma li { margin-bottom: 4px; border-bottom: 1px dashed #eee; padding-bottom: 4px;}
+        ul.lista-cronograma li { margin-bottom: 6px; border-bottom: 1px dashed #eee; padding-bottom: 4px;}
         ul.lista-cronograma li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
+
+        /* Estilos específicos para las etiquetas del cronograma */
+        .tag-clasificacion { color: #777; font-weight: bold; font-size: 9px; text-transform: uppercase; margin-right: 4px; }
+        .tag-tipo { color: #333; font-weight: bold; font-size: 10px; margin-right: 8px; }
     </style>
 
     <style th:utext="'.color-corporativo { color: ' + ${colorHex} + ' !important; } .fondo-corporativo { background-color: ' + ${colorHex} + ' !important; } .borde-corporativo { border-bottom: 3px solid ' + ${colorHex} + ' !important; }'"></style>
 </head>
 
-<body th:with="
+<body prefix="sch: https://schema.org/ guide: https://guia.org/" typeof="guide:CourseGuide" th:with="
     hasProfesorado=${guia.profesorado != null and !guia.profesorado.isEmpty()},
     hasConocimientos=${guia.otrosDatos != null and guia.otrosDatos.conocimientosPrevios != null and !guia.otrosDatos.conocimientosPrevios.isEmpty()},
     hasCompObj=${guia.otrosDatos != null and ((guia.otrosDatos.competencias != null and !guia.otrosDatos.competencias.isEmpty()) or (guia.otrosDatos.objetivos != null and !guia.otrosDatos.objetivos.isEmpty()))},
@@ -65,11 +69,11 @@
     <div class="portada salto-pagina">
         <img th:if="${not #strings.isEmpty(logoBase64)}" th:src="${logoBase64}" />
         <h1 class="color-corporativo">Guía de Aprendizaje</h1>
-        <h2 th:text="${guia.datosGenerales.nombreAsignatura}"></h2>
+        <h2 property="sch:name" th:text="${guia.datosGenerales.nombreAsignatura}"></h2>
         <div class="portada-info">
             <p th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">Titulación: <span th:text="${guia.datosGenerales.titulacion}"></span></p>
-            <p th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">Código de Asignatura: <span th:text="${guia.datosGenerales.codigoAsignatura}"></span></p>
-            <p th:if="${not #strings.isEmpty(guia.datosGenerales.curso)}">Curso Académico: <span th:text="${guia.datosGenerales.curso}"></span></p>
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">Código de Asignatura: <span property="sch:courseCode" th:text="${guia.datosGenerales.codigoAsignatura}"></span></p>
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.curso)}">Curso Académico: <span property="guide:teachingPeriod" th:text="${guia.datosGenerales.curso}"></span></p>
             <p th:if="${not #strings.isEmpty(guia.datosGenerales.semestre)}">Semestre: <span th:text="${guia.datosGenerales.semestre}"></span></p>
             <p th:if="${not #strings.isEmpty(guia.datosGenerales.centro)}">Centro: <span th:text="${guia.datosGenerales.centro}"></span></p>
         </div>
@@ -99,7 +103,7 @@
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.creditos)}">
                 <th class="color-corporativo" style="width: 30%;">Créditos ECTS:</th>
-                <td th:text="${guia.datosGenerales.creditos}"></td>
+                <td property="guide:numberOfCredits" th:text="${guia.datosGenerales.creditos}"></td>
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">
                 <th class="color-corporativo" style="width: 30%;">Titulación:</th>
@@ -123,7 +127,7 @@
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.idioma)}">
                 <th class="color-corporativo" style="width: 30%;">Idioma:</th>
-                <td th:text="${guia.datosGenerales.idioma}"></td>
+                <td property="sch:inLanguage" th:text="${guia.datosGenerales.idioma}"></td>
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.departamento)}">
                 <th class="color-corporativo" style="width: 30%;">Departamento:</th>
@@ -171,10 +175,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="prof : ${guia.profesorado}">
-                    <td th:text="${prof.nombre} + (${prof.esCoordinador} ? ' (Coord.)' : '')" style="font-weight: bold;"></td>
-                    <td th:text="${prof.email}"></td>
-                    <td th:text="${prof.horarioTutorias}"></td>
+                <tr th:each="prof : ${guia.profesorado}" th:attr="property=${prof.esCoordinador ? 'sch:director' : 'sch:instructor'}" typeof="guide:Lecturer">
+                    <td property="sch:name" th:text="${prof.nombre} + (${prof.esCoordinador} ? ' (Coord.)' : '')" style="font-weight: bold;"></td>
+                    <td property="sch:email" th:text="${prof.email}"></td>
+                    <td property="guide:tutorshipsSchedule" th:text="${prof.horarioTutorias}"></td>
                 </tr>
             </tbody>
         </table>
@@ -184,7 +188,9 @@
         <div class="seccion-titulo fondo-corporativo">3. Conocimientos previos recomendados</div>
         <div class="bloque-texto">
             <ul class="lista-normal">
-                <li th:each="item : ${guia.otrosDatos.conocimientosPrevios}" th:text="${item.texto}"></li>
+                <li th:each="item : ${guia.otrosDatos.conocimientosPrevios}" typeof="guide:RequiredKnowledge">
+                    <span property="guide:previousKnowledge" th:text="${item.texto}"></span>
+                </li>
             </ul>
         </div>
     </div>
@@ -194,15 +200,18 @@
         <div class="bloque-texto" th:if="${guia.otrosDatos.competencias != null and !guia.otrosDatos.competencias.isEmpty()}">
             <h4 class="color-corporativo">Competencias</h4>
             <ul class="lista-normal">
-                <li th:each="comp : ${guia.otrosDatos.competencias}">
-                    <strong th:text="${comp.tipo} + ' [' + ${comp.codigo} + ']:'"></strong> <span th:text="${comp.descripcion}"></span>
+                <li th:each="comp : ${guia.otrosDatos.competencias}" property="guide:hasCompetency" typeof="guide:Competency">
+                    <strong th:text="${comp.tipo} + ' [' + ${comp.codigo} + ']:'"></strong> 
+                    <span property="sch:name" th:text="${comp.descripcion}"></span>
                 </li>
             </ul>
         </div>
         <div class="bloque-texto" th:if="${guia.otrosDatos.objetivos != null and !guia.otrosDatos.objetivos.isEmpty()}">
             <h4 class="color-corporativo">Resultados de aprendizaje</h4>
             <ul class="lista-normal">
-                <li th:each="item : ${guia.otrosDatos.objetivos}" th:text="${item.texto}"></li>
+                <li th:each="item : ${guia.otrosDatos.objetivos}" property="guide:hasLearningResult" typeof="guide:LearningResult">
+                    <span property="sch:name" th:text="${item.texto}"></span>
+                </li>
             </ul>
         </div>
     </div>
@@ -211,15 +220,15 @@
         <div class="seccion-titulo fondo-corporativo">5. Descripción de la asignatura y Temario</div>
         <div class="bloque-texto" th:if="${not #strings.isEmpty(guia.otrosDatos.metodologia)}">
             <h4 class="color-corporativo">Metodología Docente</h4>
-            <p th:text="${guia.otrosDatos.metodologia}"></p>
+            <p property="sch:description" th:text="${guia.otrosDatos.metodologia}"></p>
         </div>
         
         <div class="bloque-texto" th:if="${guia.otrosDatos.contenidos != null and !guia.otrosDatos.contenidos.isEmpty()}">
             <h4 class="color-corporativo">Temario</h4>
             <ul style="list-style-type: none; padding-left: 10px;">
-                <li th:each="item : ${guia.otrosDatos.contenidos}" 
+                <li th:each="item : ${guia.otrosDatos.contenidos}" typeof="guide:SyllabusItem"
                     th:style="'margin-bottom: 5px; margin-left: ' + (${item.nivel != null ? item.nivel : 0} * 25) + 'px; font-weight: ' + (${item.nivel == 0} ? 'bold' : 'normal') + ';'">
-                    <span th:text="${item.tema}"></span>
+                    <span property="sch:name" th:text="${item.tema}"></span>
                 </li>
             </ul>
         </div>
@@ -227,7 +236,7 @@
 
     <div class="seccion" th:if="${hasCronograma}">
         <div class="seccion-titulo fondo-corporativo">6. Cronograma</div>
-        <div class="bloque-texto">
+        <div class="bloque-texto" property="sch:courseSchedule" typeof="guide:Schedule">
             <table>
                 <thead>
                     <tr>
@@ -237,13 +246,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="fila : ${guia.otrosDatos.cronograma}">
-                        <td th:text="${fila.semana}" style="font-weight: bold; text-align: center; vertical-align: middle;"></td>
+                    <tr th:each="fila : ${guia.otrosDatos.cronograma}" property="sch:eventSchedule" typeof="guide:ScheduleEvent">
+                        <td property="sch:name" th:text="${fila.semana}" style="font-weight: bold; text-align: center; vertical-align: middle;"></td>
                         <td>
                             <ul class="lista-cronograma">
-                                <li th:each="act : ${fila.actividades}">
-                                    <strong th:text="'[' + ${act.tipo} + ']'" style="color: #555;"></strong> 
-                                    <span th:text="${act.descripcion}"></span>
+                                <li th:each="act : ${fila.actividades}" property="guide:hasActivity" typeof="guide:Activity">
+                                    <meta property="guide:activityDuration" th:content="${act.horas}" />
+                                    
+                                    <span class="tag-clasificacion" th:text="'[' + ${act.clasificacion} + ']'"></span>
+                                    <strong class="tag-tipo" property="guide:activityFormat" th:text="'[' + ${act.tipo} + ']'"></strong>
+                                    
+                                    <span property="guide:activityDescription" th:text="${act.descripcion}"></span>
                                 </li>
                             </ul>
                         </td>
@@ -258,18 +271,23 @@
         </div>
     </div>
 
-    <div class="seccion" th:if="${hasEvaluacion}">
+    <div class="seccion" th:if="${hasEvaluacion}" property="guide:hasEvaluation" typeof="guide:EvaluationSystem">
         <div class="seccion-titulo fondo-corporativo">7. Actividades y criterios de evaluación</div>
         
         <div class="bloque-texto" th:if="${guia.otrosDatos.actividadesEvaluacion != null and !guia.otrosDatos.actividadesEvaluacion.isEmpty()}">
             <h4 class="color-corporativo">Actividades de Evaluación</h4>
             <ul class="lista-normal">
-                <li th:each="act : ${guia.otrosDatos.actividadesEvaluacion}" style="margin-bottom: 10px;">
-                    <strong th:text="${act.nombre} + ' (' + ${act.tipo} + ' | Peso: ' + ${act.peso} + '% | Mín: ' + ${act.notaMinima} + '):'"></strong> 
-                    <span th:text="${act.descripcion}"></span>
+                <li th:each="act : ${guia.otrosDatos.actividadesEvaluacion}" property="guide:hasEvaluationTrial" typeof="guide:EvaluationTrial" style="margin-bottom: 10px;">
+                    <strong>
+                        <span property="sch:name" th:text="${act.nombre}"></span> 
+                        (<span property="guide:trialType" th:text="${act.tipo}"></span> | 
+                        Peso: <span property="guide:gradePercentage" th:text="${act.peso}"></span>% | 
+                        Mín: <span property="guide:minimumScore" th:text="${act.notaMinima}"></span>):
+                    </strong> 
+                    <span property="guide:trialDescription" th:text="${act.descripcion}"></span>
                     
-                    <div th:if="${not #strings.isEmpty(act.competencias)}" style="margin-top: 3px; font-size: 10px; color: #555; font-style: italic;">
-                        Competencias evaluadas: <span th:text="${act.competencias}"></span>
+                    <div th:if="${not #strings.isEmpty(act.competencias)}" property="guide:involvesCompetency" typeof="guide:Competency" style="margin-top: 3px; font-size: 10px; color: #555; font-style: italic;">
+                        Competencias: <span property="sch:name" th:text="${act.competencias}"></span>
                     </div>
                 </li>
             </ul>
@@ -277,11 +295,11 @@
 
         <div class="bloque-texto" th:if="${not #strings.isEmpty(guia.otrosDatos.evaluacion)}">
             <h4 class="color-corporativo">Criterios de Evaluación</h4>
-            <p th:text="${guia.otrosDatos.evaluacion}"></p>
+            <p property="guide:evaluationDescription" th:text="${guia.otrosDatos.evaluacion}"></p>
         </div>
         <div class="bloque-texto" th:if="${not #strings.isEmpty(guia.otrosDatos.normasRealizacionPruebas)}">
             <h4 class="color-corporativo">Normas para la realización de pruebas</h4>
-            <p th:text="${guia.otrosDatos.normasRealizacionPruebas}"></p>
+            <p property="guide:evaluationDescription" th:text="${guia.otrosDatos.normasRealizacionPruebas}"></p>
         </div>
     </div>
 
@@ -289,8 +307,9 @@
         <div class="seccion-titulo fondo-corporativo">8. Recursos didácticos</div>
         <div class="bloque-texto">
             <ul class="lista-normal">
-                <li th:each="bib : ${guia.otrosDatos.bibliografia}">
-                    <strong th:text="'[' + ${bib.tipo} + '] '"></strong> <span th:text="${bib.referencia}"></span>
+                <li th:each="bib : ${guia.otrosDatos.bibliografia}" property="guide:hasDidacticResource" typeof="guide:DidacticResource">
+                    <strong>[<span property="guide:bibliographyType" th:text="${bib.tipo}"></span>]</strong> 
+                    <span property="guide:bibliographyDescription" th:text="${bib.referencia}"></span>
                 </li>
             </ul>
         </div>
@@ -298,7 +317,9 @@
 
     <div class="seccion" th:if="${hasOtraInfo}">
         <div class="seccion-titulo fondo-corporativo">9. Otra información</div>
-        <div class="bloque-texto"><p th:text="${guia.otrosDatos.otraInformacion}"></p></div>
+        <div class="bloque-texto">
+            <p property="guide:otherInformation" th:text="${guia.otrosDatos.otraInformacion}"></p>
+        </div>
     </div>
 
 </body>
