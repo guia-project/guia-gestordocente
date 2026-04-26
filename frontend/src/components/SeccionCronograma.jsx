@@ -53,6 +53,9 @@ export default function SeccionCronograma({
                             {semana.actividades && semana.actividades.map((act, indexAct) => (
                                 <div key={indexAct} style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: '#1e1e1e', padding: '10px', borderRadius: '6px' }}>
                                     <div style={{ flex: 1 }}>
+                                        <span style={{ color: '#a855f7', fontWeight: 'bold', marginRight: '8px', backgroundColor: 'rgba(168, 85, 247, 0.2)', padding: '2px 6px', borderRadius: '4px', fontSize: '11px' }}>
+                                            {act.clasificacion || 'Tipo 1'}
+                                        </span>
                                         <span style={{ color: '#10b981', fontWeight: 'bold', fontSize: '12px', marginRight: '10px' }}>[{act.tipo}]</span>
                                         <span style={{ color: '#e0e0e0', fontSize: '14px' }}>{act.descripcion}</span>
                                     </div>
@@ -91,10 +94,23 @@ export default function SeccionCronograma({
                                     <div key={indexAct} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                         
                                         {/* CRÍTICO: Pasamos AMBOS índices (indexSemana y indexAct) para que el Padre sepa exactamente qué campo anidado modificar */}
-                                        <select name="tipo" value={act.tipo} onChange={(e) => onActividadChange(indexSemana, indexAct, e)} style={{ width: '25%', padding: '8px', borderRadius: '4px', border: '1px solid #333', backgroundColor: '#1e1e1e', color: '#fff' }}>
-                                            <option value="Lección Magistral">Lección Magistral</option>
-                                            <option value="Práctica">Práctica</option>
+                                        
+                                        {/* NUEVO DESPLEGABLE: Clasificación (Ontología) */}
+                                        <select name="clasificacion" value={act.clasificacion || 'Tipo 1'} onChange={(e) => onActividadChange(indexSemana, indexAct, e)} style={{ width: '20%', padding: '8px', borderRadius: '4px', border: '1px solid #333', backgroundColor: '#1e1e1e', color: '#a855f7', fontWeight: 'bold' }}>
+                                            <option value="Tipo 1">Tipo 1</option>
+                                            <option value="Tipo 2">Tipo 2</option>
+                                            <option value="Teleenseñanza">Teleenseñanza</option>
                                             <option value="Evaluación">Evaluación</option>
+                                        </select>
+
+                                        {/* DESPLEGABLE TIPO ACTUALIZADO */}
+                                        <select name="tipo" value={act.tipo || 'Lección Magistral'} onChange={(e) => onActividadChange(indexSemana, indexAct, e)} style={{ width: '25%', padding: '8px', borderRadius: '4px', border: '1px solid #333', backgroundColor: '#1e1e1e', color: '#10b981' }}>
+                                            <option value="Lección Magistral">Lección Magistral</option>
+                                            <option value="Prácticas de laboratorio">Prácticas de laboratorio</option>
+                                            <option value="Clase de problemas">Clase de problemas</option>
+                                            <option value="Trabajo en grupo">Trabajo en grupo</option>
+                                            <option value="Examen escrito">Examen escrito</option>
+                                            <option value="Otras actividades formativas">Otras actividades formativas</option>
                                         </select>
                                         
                                         <input type="text" name="descripcion" placeholder="Descripción..." value={act.descripcion} onChange={(e) => onActividadChange(indexSemana, indexAct, e)} style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #333', backgroundColor: '#1e1e1e', color: '#fff' }} />

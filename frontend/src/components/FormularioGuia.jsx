@@ -55,7 +55,8 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
     const [cronograma, setCronograma] = useState(
         Array.from({ length: 17 }, (_, i) => ({ 
             semana: `${i + 1}`, 
-            actividades: [{ tipo: 'Lección Magistral', descripcion: '', horas: '' }] 
+            // NUEVO: Añadido el campo clasificacion por defecto
+            actividades: [{ clasificacion: 'Tipo 1', tipo: 'Lección Magistral', descripcion: '', horas: '' }] 
         }))
     );
 
@@ -179,10 +180,12 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 setCronograma(crono.map(c => {
                     const actsRaw = c["Actividades"] || c.actividades;
                     const actividadesMapeadas = Array.isArray(actsRaw) ? actsRaw.map(act => ({
+                        // NUEVO: Recuperamos la clasificación de la BD o ponemos Tipo 1 por defecto
+                        clasificacion: act["Clasificación"] || act.clasificacion || 'Tipo 1',
                         tipo: act["Tipo"] || act.tipo || 'Lección Magistral',
                         descripcion: act["Descripción"] || act.descripcion || '',
                         horas: act["Horas"] || act.horas || ''
-                    })) : [{ tipo: 'Lección Magistral', descripcion: '', horas: '' }];
+                    })) : [{ clasificacion: 'Tipo 1', tipo: 'Lección Magistral', descripcion: '', horas: '' }];
 
                     return {
                         semana: c["Semana"] || c.semana || '',
@@ -247,7 +250,13 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
             if (Array.isArray(od["Cronograma"])) {
                 setCronograma(od["Cronograma"].map(c => ({ 
                     semana: c["Semana"] || '', 
-                    actividades: Array.isArray(c["Actividades"]) ? c["Actividades"].map(act => ({ tipo: act["Tipo"] || 'Lección Magistral', descripcion: act["Descripción"] || '', horas: act["Horas"] || '' })) : [] 
+                    actividades: Array.isArray(c["Actividades"]) ? c["Actividades"].map(act => ({ 
+                        // NUEVO: La IA también rellenará la clasificación
+                        clasificacion: act["Clasificación"] || 'Tipo 1',
+                        tipo: act["Tipo"] || 'Lección Magistral', 
+                        descripcion: act["Descripción"] || '', 
+                        horas: act["Horas"] || '' 
+                    })) : [] 
                 })));
             }
         }
@@ -322,7 +331,8 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
     const eliminarSemanaCronograma = (indexSemana) => setCronograma(cronograma.filter((_, i) => i !== indexSemana));
     const agregarActividadCrono = (indexSemana) => {
         const nuevoCrono = [...cronograma];
-        nuevoCrono[indexSemana].actividades.push({ tipo: 'Lección Magistral', descripcion: '', horas: '' });
+        // NUEVO: La actividad creada por defecto lleva su clasificación
+        nuevoCrono[indexSemana].actividades.push({ clasificacion: 'Tipo 1', tipo: 'Lección Magistral', descripcion: '', horas: '' });
         setCronograma(nuevoCrono);
     };
     const eliminarActividadCrono = (indexSemana, indexActividad) => {
@@ -369,7 +379,7 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 "Cronograma": cronograma.filter(c => c.semana.trim() !== '').map(c => ({ 
                     "Semana": c.semana, 
                     "Actividades": c.actividades.filter(act => act.descripcion.trim() !== '').map(act => ({
-                        "Tipo": act.tipo, "Descripción": act.descripcion, "Horas": act.horas
+                        "Clasificación": act.clasificacion, "Tipo": act.tipo, "Descripción": act.descripcion, "Horas": act.horas // NUEVO
                     }))
                 }))
             }
