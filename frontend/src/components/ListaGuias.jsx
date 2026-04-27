@@ -110,8 +110,39 @@ export default function ListaGuias({ onEditar }) {
         }
     };
 
-    const descargarRdf = (idGuia) => {
-        window.open(`${baseUrl}/api/guias/${idGuia}/rdf`, '_blank');
+    // NUEVA FUNCIÓN: Descargar el grafo semántico en formato Turtle
+    const handleDescargarTurtle = async (idGuia) => {
+        try {
+            const token = localStorage.getItem('token'); 
+            console.log("Generando archivo Turtle...");
+
+            const response = await fetch(`${baseUrl}/api/guias/descargar-turtle/${idGuia}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Guia_${idGuia}_Semantica.ttl`; 
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                
+                console.log("¡Descarga de RDF completada!");
+            } else {
+                alert('❌ Error al generar el archivo RDF/Turtle. Comprueba la consola del backend.');
+            }
+        } catch (error) {
+            console.error('Error de conexión:', error);
+            alert('❌ Error crítico al conectar con el servidor.');
+        }
     };
 
     const handleSubirLogo = (e) => {
@@ -200,13 +231,15 @@ export default function ListaGuias({ onEditar }) {
                                         📄 PDF
                                     </button>
 
+                                    {/* BOTÓN ACTUALIZADO PARA DESCARGAR TURTLE */}
                                     <button 
-                                        onClick={() => descargarRdf(guia.id)} 
+                                        onClick={() => handleDescargarTurtle(guia.id)} 
                                         style={btnStyle}
+                                        title="Descarga los datos semánticos en formato Turtle (.ttl)"
                                         onMouseOver={(e) => { e.target.style.backgroundColor = '#374151'; e.target.style.borderColor = '#6b7280'; }}
                                         onMouseOut={(e) => { e.target.style.backgroundColor = '#2a2a2a'; e.target.style.borderColor = '#444'; }}
                                     >
-                                        🌐 RDF
+                                        🕸️ RDF (.ttl)
                                     </button>
 
                                     <button 
