@@ -1,58 +1,204 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8" />
     <title>Guía Docente</title>
-    
+
     <style>
         /* --- ESTILOS DE IMPRESIÓN (PRINT CSS) --- */
-        @page { size: A4; margin: 2.5cm; }
-        
-        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11px; color: #333; line-height: 1.4; }
-        
+        @page {
+            size: A4;
+            margin: 2.5cm;
+        }
+
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 11px;
+            color: #333;
+            line-height: 1.4;
+        }
+
         /* Forzar un salto de página real en el PDF */
-        .salto-pagina { page-break-after: always; }
-        
+        .salto-pagina {
+            page-break-after: always;
+        }
+
         /* --- ESTILOS DE LA PORTADA --- */
-        .portada { text-align: center; margin-top: 80px; }
-        .portada img { width: 140px; height: auto; margin-bottom: 30px; }
-        .portada h1 { font-size: 26px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px; }
-        .portada h2 { font-size: 20px; color: #444; margin-bottom: 50px; }
-        .portada-info { font-size: 14px; color: #555; line-height: 1.8; margin-top: 40px; text-align: left; margin-left: 10%; margin-right: 10%; border-top: 1px solid #ccc; padding-top: 20px;}
-        .portada-info span { color: #222; font-weight: bold; }
+        .portada {
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .portada img {
+            width: 140px;
+            height: auto;
+            margin-bottom: 30px;
+        }
+
+        .portada h1 {
+            font-size: 26px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+        }
+
+        .portada h2 {
+            font-size: 20px;
+            color: #444;
+            margin-bottom: 50px;
+        }
+
+        .portada-info {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.8;
+            margin-top: 40px;
+            text-align: left;
+            margin-left: 10%;
+            margin-right: 10%;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .portada-info span {
+            color: #222;
+            font-weight: bold;
+        }
 
         /* --- ESTILOS DEL ÍNDICE --- */
-        .indice { margin-top: 40px; }
-        .indice h2 { font-size: 22px; margin-bottom: 30px; padding-bottom: 10px; }
-        .indice ul { list-style-type: none; padding: 0; font-size: 14px; }
-        .indice li { margin-bottom: 15px; border-bottom: 1px dotted #ccc; padding-bottom: 5px; color: #444; font-weight: bold;}
+        .indice {
+            margin-top: 40px;
+        }
+
+        .indice h2 {
+            font-size: 22px;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+
+        .indice ul {
+            list-style-type: none;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        .indice li {
+            margin-bottom: 15px;
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 5px;
+            color: #444;
+            font-weight: bold;
+        }
 
         /* --- ESTILOS DE SECCIONES Y TABLAS --- */
-        .seccion { margin-bottom: 25px; page-break-inside: avoid; }
-        .seccion-titulo { color: white; padding: 6px 12px; font-weight: bold; font-size: 13px; margin-bottom: 12px; text-transform: uppercase; }
-        
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; page-break-inside: auto; }
-        tr { page-break-inside: avoid; page-break-after: auto; }
-        th, td { border: 1px solid #bdc3c7; padding: 6px 8px; text-align: left; vertical-align: top; }
-        th { background-color: #f4f6f9; font-weight: bold; }
-        
-        .bloque-texto { margin-bottom: 15px; text-align: justify; }
-        .bloque-texto h4 { margin: 0 0 4px 0; font-size: 12px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
-        .bloque-texto p { margin: 0; white-space: pre-wrap; }
-        
-        ul.lista-normal { margin: 5px 0 15px 0; padding-left: 20px; font-weight: normal; font-size: 11px;}
-        ul.lista-normal li { margin-bottom: 4px; border: none; padding: 0;}
-        
-        ul.lista-cronograma { list-style-type: none; padding-left: 0; margin: 0; }
-        ul.lista-cronograma li { margin-bottom: 6px; border-bottom: 1px dashed #eee; padding-bottom: 4px;}
-        ul.lista-cronograma li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
+        .seccion {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .seccion-titulo {
+            color: white;
+            padding: 6px 12px;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            page-break-inside: auto;
+        }
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        th,
+        td {
+            border: 1px solid #bdc3c7;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f4f6f9;
+            font-weight: bold;
+        }
+
+        .bloque-texto {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .bloque-texto h4 {
+            margin: 0 0 4px 0;
+            font-size: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 2px;
+        }
+
+        .bloque-texto p {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        ul.lista-normal {
+            margin: 5px 0 15px 0;
+            padding-left: 20px;
+            font-weight: normal;
+            font-size: 11px;
+        }
+
+        ul.lista-normal li {
+            margin-bottom: 4px;
+            border: none;
+            padding: 0;
+        }
+
+        ul.lista-cronograma {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        ul.lista-cronograma li {
+            margin-bottom: 6px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 4px;
+        }
+
+        ul.lista-cronograma li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
 
         /* Estilos específicos para las etiquetas del cronograma */
-        .tag-clasificacion { color: #777; font-weight: bold; font-size: 9px; text-transform: uppercase; margin-right: 4px; }
-        .tag-tipo { color: #333; font-weight: bold; font-size: 10px; margin-right: 8px; }
+        .tag-clasificacion {
+            color: #777;
+            font-weight: bold;
+            font-size: 9px;
+            text-transform: uppercase;
+            margin-right: 4px;
+        }
+
+        .tag-tipo {
+            color: #333;
+            font-weight: bold;
+            font-size: 10px;
+            margin-right: 8px;
+        }
     </style>
 
-    <style th:utext="'.color-corporativo { color: ' + ${colorHex} + ' !important; } .fondo-corporativo { background-color: ' + ${colorHex} + ' !important; } .borde-corporativo { border-bottom: 3px solid ' + ${colorHex} + ' !important; }'"></style>
+    <style
+        th:utext="'.color-corporativo { color: ' + ${colorHex} + ' !important; } .fondo-corporativo { background-color: ' + ${colorHex} + ' !important; } .borde-corporativo { border-bottom: 3px solid ' + ${colorHex} + ' !important; }'">
+    </style>
 </head>
 
 <body prefix="sch: https://schema.org/ guide: https://guia.org/" typeof="guide:CourseGuide" th:with="
@@ -71,11 +217,33 @@
         <h1 class="color-corporativo">Guía de Aprendizaje</h1>
         <h2 property="sch:name" th:text="${guia.datosGenerales.nombreAsignatura}"></h2>
         <div class="portada-info">
-            <p th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">Titulación: <span th:text="${guia.datosGenerales.titulacion}"></span></p>
-            <p th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">Código de Asignatura: <span property="sch:courseCode" th:text="${guia.datosGenerales.codigoAsignatura}"></span></p>
-            <p th:if="${not #strings.isEmpty(guia.datosGenerales.curso)}">Curso Académico: <span property="guide:teachingPeriod" th:text="${guia.datosGenerales.curso}"></span></p>
-            <p th:if="${not #strings.isEmpty(guia.datosGenerales.semestre)}">Semestre: <span th:text="${guia.datosGenerales.semestre}"></span></p>
-            <p th:if="${not #strings.isEmpty(guia.datosGenerales.centro)}">Centro: <span th:text="${guia.datosGenerales.centro}"></span></p>
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">
+                Titulación:
+                <span typeof="guide:Degree">
+                    <span property="sch:name" th:text="${guia.datosGenerales.titulacion}"></span>
+                </span>
+            </p>
+
+            <div rev="sch:hasCourseInstance" typeof="guide:Course">
+                <p th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">
+                    Código de Asignatura: <span property="sch:courseCode"
+                        th:text="${guia.datosGenerales.codigoAsignatura}"></span>
+                </p>
+                <p th:if="${not #strings.isEmpty(guia.datosGenerales.semestre)}">
+                    Semestre: <span property="guide:semester" th:text="${guia.datosGenerales.semestre}"></span>
+                </p>
+            </div>
+
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.curso)}">
+                Curso Académico: <span property="guide:teachingPeriod" th:text="${guia.datosGenerales.curso}"></span>
+            </p>
+
+            <p th:if="${not #strings.isEmpty(guia.datosGenerales.centro)}">
+                Centro:
+                <span typeof="guide:UniversityCenter">
+                    <span property="sch:name" th:text="${guia.datosGenerales.centro}"></span>
+                </span>
+            </p>
         </div>
     </div>
 
@@ -97,9 +265,10 @@
     <div class="seccion">
         <div class="seccion-titulo fondo-corporativo">1. Datos descriptivos de la asignatura</div>
         <table>
-            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}" rev="sch:hasCourseInstance"
+                typeof="guide:Course">
                 <th class="color-corporativo" style="width: 30%;">Código:</th>
-                <td th:text="${guia.datosGenerales.codigoAsignatura}"></td>
+                <td property="sch:courseCode" th:text="${guia.datosGenerales.codigoAsignatura}"></td>
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.creditos)}">
                 <th class="color-corporativo" style="width: 30%;">Créditos ECTS:</th>
@@ -107,19 +276,23 @@
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">
                 <th class="color-corporativo" style="width: 30%;">Titulación:</th>
-                <td th:text="${guia.datosGenerales.titulacion}"></td>
+                <td typeof="guide:Degree">
+                    <span property="sch:name" th:text="${guia.datosGenerales.titulacion}"></span>
+                </td>
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.curso)}">
                 <th class="color-corporativo" style="width: 30%;">Curso:</th>
-                <td th:text="${guia.datosGenerales.curso}"></td>
+                <td property="guide:teachingPeriod" th:text="${guia.datosGenerales.curso}"></td>
             </tr>
-            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.semestre)}">
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.semestre)}" rev="sch:hasCourseInstance"
+                typeof="guide:Course">
                 <th class="color-corporativo" style="width: 30%;">Semestre:</th>
-                <td th:text="${guia.datosGenerales.semestre}"></td>
+                <td property="guide:semester" th:text="${guia.datosGenerales.semestre}"></td>
             </tr>
-            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.caracter)}">
+            <tr th:if="${not #strings.isEmpty(guia.datosGenerales.caracter)}" rev="sch:hasCourseInstance"
+                typeof="guide:Course">
                 <th class="color-corporativo" style="width: 30%;">Carácter:</th>
-                <td th:text="${guia.datosGenerales.caracter}"></td>
+                <td property="guide:courseType" th:text="${guia.datosGenerales.caracter}"></td>
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.modalidad)}">
                 <th class="color-corporativo" style="width: 30%;">Modalidad:</th>
@@ -147,11 +320,13 @@
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.centro)}">
                 <th class="color-corporativo" style="width: 30%;">Centro:</th>
-                <td th:text="${guia.datosGenerales.centro}"></td>
+                <td typeof="guide:UniversityCenter">
+                    <span property="sch:name" th:text="${guia.datosGenerales.centro}"></span>
+                </td>
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.periodo)}">
                 <th class="color-corporativo" style="width: 30%;">Período Impartición:</th>
-                <td th:text="${guia.datosGenerales.periodo}"></td>
+                <td property="guide:teachingPeriodMonths" th:text="${guia.datosGenerales.periodo}"></td>
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.anioPlanEstudios)}">
                 <th class="color-corporativo" style="width: 30%;">Plan de Estudios (Año):</th>
@@ -175,8 +350,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="prof : ${guia.profesorado}" th:attr="property=${prof.esCoordinador ? 'sch:director' : 'sch:instructor'}" typeof="guide:Lecturer">
-                    <td property="sch:name" th:text="${prof.nombre} + (${prof.esCoordinador} ? ' (Coord.)' : '')" style="font-weight: bold;"></td>
+                <tr th:each="prof : ${guia.profesorado}"
+                    th:attr="property=${prof.esCoordinador ? 'sch:director' : 'sch:instructor'}"
+                    typeof="guide:Lecturer">
+
+                    <td style="font-weight: bold;">
+                        <span property="sch:name" th:text="${prof.nombre}"></span>
+                        <span th:if="${prof.esCoordinador}"> (Coord.)</span>
+                    </td>
+
                     <td property="sch:email" th:text="${prof.email}"></td>
                     <td property="guide:tutorshipsSchedule" th:text="${prof.horarioTutorias}"></td>
                 </tr>
@@ -197,11 +379,13 @@
 
     <div class="seccion" th:if="${hasCompObj}">
         <div class="seccion-titulo fondo-corporativo">4. Competencias y resultados de aprendizaje</div>
-        <div class="bloque-texto" th:if="${guia.otrosDatos.competencias != null and !guia.otrosDatos.competencias.isEmpty()}">
+        <div class="bloque-texto"
+            th:if="${guia.otrosDatos.competencias != null and !guia.otrosDatos.competencias.isEmpty()}">
             <h4 class="color-corporativo">Competencias</h4>
             <ul class="lista-normal">
-                <li th:each="comp : ${guia.otrosDatos.competencias}" property="guide:hasCompetency" typeof="guide:Competency">
-                    <strong th:text="${comp.tipo} + ' [' + ${comp.codigo} + ']:'"></strong> 
+                <li th:each="comp : ${guia.otrosDatos.competencias}" property="guide:hasCompetency"
+                    typeof="guide:Competency">
+                    <strong th:text="${comp.tipo} + ' [' + ${comp.codigo} + ']:'"></strong>
                     <span property="sch:name" th:text="${comp.descripcion}"></span>
                 </li>
             </ul>
@@ -209,7 +393,8 @@
         <div class="bloque-texto" th:if="${guia.otrosDatos.objetivos != null and !guia.otrosDatos.objetivos.isEmpty()}">
             <h4 class="color-corporativo">Resultados de aprendizaje</h4>
             <ul class="lista-normal">
-                <li th:each="item : ${guia.otrosDatos.objetivos}" property="guide:hasLearningResult" typeof="guide:LearningResult">
+                <li th:each="item : ${guia.otrosDatos.objetivos}" property="guide:hasLearningResult"
+                    typeof="guide:LearningResult">
                     <span property="sch:name" th:text="${item.texto}"></span>
                 </li>
             </ul>
@@ -218,18 +403,24 @@
 
     <div class="seccion" th:if="${hasTemario}">
         <div class="seccion-titulo fondo-corporativo">5. Descripción de la asignatura y Temario</div>
+
         <div class="bloque-texto" th:if="${not #strings.isEmpty(guia.otrosDatos.metodologia)}">
             <h4 class="color-corporativo">Metodología Docente</h4>
             <p property="sch:description" th:text="${guia.otrosDatos.metodologia}"></p>
         </div>
-        
-        <div class="bloque-texto" th:if="${guia.otrosDatos.contenidos != null and !guia.otrosDatos.contenidos.isEmpty()}">
+
+        <div class="bloque-texto"
+            th:if="${guia.otrosDatos.contenidos != null and !guia.otrosDatos.contenidos.isEmpty()}">
             <h4 class="color-corporativo">Temario</h4>
-            <ul style="list-style-type: none; padding-left: 10px;">
-                <li th:each="item : ${guia.otrosDatos.contenidos}" typeof="guide:SyllabusItem"
+
+            <ul style="list-style-type: none; padding-left: 10px;" typeof="guide:Syllabus">
+
+                <li th:each="item : ${guia.otrosDatos.contenidos}" property="guide:hasItem" typeof="guide:SyllabusItem"
                     th:style="'margin-bottom: 5px; margin-left: ' + (${item.nivel != null ? item.nivel : 0} * 25) + 'px; font-weight: ' + (${item.nivel == 0} ? 'bold' : 'normal') + ';'">
+
                     <span property="sch:name" th:text="${item.tema}"></span>
                 </li>
+
             </ul>
         </div>
     </div>
@@ -246,16 +437,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="fila : ${guia.otrosDatos.cronograma}" property="sch:eventSchedule" typeof="guide:ScheduleEvent">
-                        <td property="sch:name" th:text="${fila.semana}" style="font-weight: bold; text-align: center; vertical-align: middle;"></td>
+                    <tr th:each="fila : ${guia.otrosDatos.cronograma}" property="sch:eventSchedule"
+                        typeof="guide:ScheduleEvent">
+                        <td property="sch:name" th:text="${fila.semana}"
+                            style="font-weight: bold; text-align: center; vertical-align: middle;"></td>
                         <td>
                             <ul class="lista-cronograma">
-                                <li th:each="act : ${fila.actividades}" property="guide:hasActivity" typeof="guide:Activity">
+                                <li th:each="act : ${fila.actividades}" property="guide:hasActivity" th:attr="typeof='guide:Activity ' + (
+                                    ${act.clasificacion == 'Tipo 1'} ? 'guide:ActivityType1' : (
+                                    ${act.clasificacion == 'Tipo 2'} ? 'guide:ActivityType2' : (
+                                    ${act.clasificacion == 'Teleenseñanza'} ? 'guide:RemoteActivity' : 'guide:EvaluationActivity'
+                                    )))">
+
                                     <meta property="guide:activityDuration" th:content="${act.horas}" />
-                                    
+
                                     <span class="tag-clasificacion" th:text="'[' + ${act.clasificacion} + ']'"></span>
-                                    <strong class="tag-tipo" property="guide:activityFormat" th:text="'[' + ${act.tipo} + ']'"></strong>
-                                    
+
+                                    <strong class="tag-tipo" property="guide:activityFormat"
+                                        th:text="'[' + ${act.tipo} + ']'"></strong>
+
                                     <span property="guide:activityDescription" th:text="${act.descripcion}"></span>
                                 </li>
                             </ul>
@@ -273,20 +473,24 @@
 
     <div class="seccion" th:if="${hasEvaluacion}" property="guide:hasEvaluation" typeof="guide:EvaluationSystem">
         <div class="seccion-titulo fondo-corporativo">7. Actividades y criterios de evaluación</div>
-        
-        <div class="bloque-texto" th:if="${guia.otrosDatos.actividadesEvaluacion != null and !guia.otrosDatos.actividadesEvaluacion.isEmpty()}">
+
+        <div class="bloque-texto"
+            th:if="${guia.otrosDatos.actividadesEvaluacion != null and !guia.otrosDatos.actividadesEvaluacion.isEmpty()}">
             <h4 class="color-corporativo">Actividades de Evaluación</h4>
             <ul class="lista-normal">
-                <li th:each="act : ${guia.otrosDatos.actividadesEvaluacion}" property="guide:hasEvaluationTrial" typeof="guide:EvaluationTrial" style="margin-bottom: 10px;">
+                <li th:each="act : ${guia.otrosDatos.actividadesEvaluacion}" property="guide:hasEvaluationTrial"
+                    typeof="guide:EvaluationTrial" style="margin-bottom: 10px;">
                     <strong>
-                        <span property="sch:name" th:text="${act.nombre}"></span> 
-                        (<span property="guide:trialType" th:text="${act.tipo}"></span> | 
-                        Peso: <span property="guide:gradePercentage" th:text="${act.peso}"></span>% | 
+                        <span property="sch:name" th:text="${act.nombre}"></span>
+                        (<span property="guide:trialType" th:text="${act.tipo}"></span> |
+                        Peso: <span property="guide:gradePercentage" th:text="${act.peso}"></span>% |
                         Mín: <span property="guide:minimumScore" th:text="${act.notaMinima}"></span>):
-                    </strong> 
+                    </strong>
                     <span property="guide:trialDescription" th:text="${act.descripcion}"></span>
-                    
-                    <div th:if="${not #strings.isEmpty(act.competencias)}" property="guide:involvesCompetency" typeof="guide:Competency" style="margin-top: 3px; font-size: 10px; color: #555; font-style: italic;">
+
+                    <div th:if="${not #strings.isEmpty(act.competencias)}" property="guide:involvesCompetency"
+                        typeof="guide:Competency"
+                        style="margin-top: 3px; font-size: 10px; color: #555; font-style: italic;">
                         Competencias: <span property="sch:name" th:text="${act.competencias}"></span>
                     </div>
                 </li>
@@ -307,8 +511,9 @@
         <div class="seccion-titulo fondo-corporativo">8. Recursos didácticos</div>
         <div class="bloque-texto">
             <ul class="lista-normal">
-                <li th:each="bib : ${guia.otrosDatos.bibliografia}" property="guide:hasDidacticResource" typeof="guide:DidacticResource">
-                    <strong>[<span property="guide:bibliographyType" th:text="${bib.tipo}"></span>]</strong> 
+                <li th:each="bib : ${guia.otrosDatos.bibliografia}" property="guide:hasDidacticResource"
+                    typeof="guide:DidacticResource">
+                    <strong>[<span property="guide:bibliographyType" th:text="${bib.tipo}"></span>]</strong>
                     <span property="guide:bibliographyDescription" th:text="${bib.referencia}"></span>
                 </li>
             </ul>
@@ -323,4 +528,5 @@
     </div>
 
 </body>
+
 </html>
