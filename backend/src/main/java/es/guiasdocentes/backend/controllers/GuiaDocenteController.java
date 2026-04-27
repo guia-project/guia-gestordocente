@@ -1,5 +1,7 @@
 package es.guiasdocentes.backend.controllers;
 
+import org.apache.any23.Any23;
+import org.apache.any23.source.DocumentSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,13 @@ import es.guiasdocentes.backend.models.GuiaDocenteDocument;
 import es.guiasdocentes.backend.repositories.GuiaDocenteRepository;
 import es.guiasdocentes.backend.services.AIService;
 
+import org.apache.any23.source.StringDocumentSource;
+import org.apache.any23.writer.TurtleWriter;
+import org.apache.any23.writer.TripleHandler;
+import java.io.ByteArrayOutputStream;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
 import java.util.List;
 
 /**
@@ -38,6 +47,7 @@ public class GuiaDocenteController {
     private final GuiaDocenteRepository repository;
     private final PdfService pdfService;
     private final AIService aiService;
+    private final SpringTemplateEngine templateEngine;
 
     /**
      * Constructor del controlador con Inyección de Dependencias.
@@ -46,12 +56,14 @@ public class GuiaDocenteController {
      * @param repository Repositorio para operaciones CRUD en MongoDB.
      * @param pdfService Servicio encargado de la lógica de generación de PDFs.
      * @param aiService  Servicio para procesar texto usando Inteligencia Artificial Generativa.
+     * @param templateEngine
      */
     @Autowired
-    public GuiaDocenteController(GuiaDocenteRepository repository, PdfService pdfService, AIService aiService) {
+    public GuiaDocenteController(GuiaDocenteRepository repository, PdfService pdfService, AIService aiService, SpringTemplateEngine templateEngine) {
         this.repository = repository;
         this.pdfService = pdfService;
         this.aiService = aiService;
+        this.templateEngine = templateEngine;
     }
 
     /**
@@ -189,6 +201,42 @@ public class GuiaDocenteController {
             return ResponseEntity.internalServerError().body("Error al actualizar la guía");
         }
     }
+
+   @GetMapping("/descargar-turtle/{id}")
+public ResponseEntity<byte[]> descargarTurtle(@PathVariable String id) {
+    try {
+        // 1. Obtener datos usando tu repositorio real
+        GuiaDocenteDocument guia = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Guía no encontrada"));
+
+        // 2. Preparar el contexto de Thymeleaf
+        Context context = new Context();
+        context.setVariable("guia", guia);
+        
+        // Aquí generamos el HTML dinámico
+        String htmlContent = templateEngine.process("guia-template", context);
+
+        // 3. Configurar Any23 para extraer RDFa y escribir en Turtle
+        Any23 runner = new Any23();
+        DocumentSource source = new StringDocumentSource(htmlContent, "https://guia.org/");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        
+        try (TripleHandler handler = new TurtleWriter(out)) {
+            runner.extract(source, handler);
+        }
+
+        byte[] turtleData = out.toByteArray();
+        
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"guia_" + id + ".ttl\"")
+                .contentType(MediaType.parseMediaType("text/turtle"))
+                .body(turtleData);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.internalServerError().build();
+    }
+}
 
     /**
      * DTO interno estático utilizado específicamente para estructurar los datos

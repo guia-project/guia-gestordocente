@@ -219,12 +219,12 @@
         <div class="portada-info">
             <p th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">
                 Titulación:
-                <span typeof="guide:Degree">
+                <span typeof="guide:Degree" resource="#grado">
                     <span property="sch:name" th:text="${guia.datosGenerales.titulacion}"></span>
                 </span>
             </p>
 
-            <div rev="sch:hasCourseInstance" typeof="guide:Course">
+            <div rev="sch:hasCourseInstance" typeof="guide:Course" resource="#curso">
                 <p th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}">
                     Código de Asignatura: <span property="sch:courseCode"
                         th:text="${guia.datosGenerales.codigoAsignatura}"></span>
@@ -240,7 +240,7 @@
 
             <p th:if="${not #strings.isEmpty(guia.datosGenerales.centro)}">
                 Centro:
-                <span typeof="guide:UniversityCenter">
+                <span typeof="guide:UniversityCenter" resource="#centro">
                     <span property="sch:name" th:text="${guia.datosGenerales.centro}"></span>
                 </span>
             </p>
@@ -266,7 +266,7 @@
         <div class="seccion-titulo fondo-corporativo">1. Datos descriptivos de la asignatura</div>
         <table>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.codigoAsignatura)}" rev="sch:hasCourseInstance"
-                typeof="guide:Course">
+                typeof="guide:Course" resource="#curso">
                 <th class="color-corporativo" style="width: 30%;">Código:</th>
                 <td property="sch:courseCode" th:text="${guia.datosGenerales.codigoAsignatura}"></td>
             </tr>
@@ -276,7 +276,7 @@
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.titulacion)}">
                 <th class="color-corporativo" style="width: 30%;">Titulación:</th>
-                <td typeof="guide:Degree">
+                <td typeof="guide:Degree" resource="#grado">
                     <span property="sch:name" th:text="${guia.datosGenerales.titulacion}"></span>
                 </td>
             </tr>
@@ -285,12 +285,12 @@
                 <td property="guide:teachingPeriod" th:text="${guia.datosGenerales.curso}"></td>
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.semestre)}" rev="sch:hasCourseInstance"
-                typeof="guide:Course">
+                typeof="guide:Course" resource="#curso">
                 <th class="color-corporativo" style="width: 30%;">Semestre:</th>
                 <td property="guide:semester" th:text="${guia.datosGenerales.semestre}"></td>
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.caracter)}" rev="sch:hasCourseInstance"
-                typeof="guide:Course">
+                typeof="guide:Course" resource="#curso">
                 <th class="color-corporativo" style="width: 30%;">Carácter:</th>
                 <td property="guide:courseType" th:text="${guia.datosGenerales.caracter}"></td>
             </tr>
@@ -320,7 +320,7 @@
             </tr>
             <tr th:if="${not #strings.isEmpty(guia.datosGenerales.centro)}">
                 <th class="color-corporativo" style="width: 30%;">Centro:</th>
-                <td typeof="guide:UniversityCenter">
+                <td typeof="guide:UniversityCenter" resource="#centro">
                     <span property="sch:name" th:text="${guia.datosGenerales.centro}"></span>
                 </td>
             </tr>
