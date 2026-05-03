@@ -18,18 +18,42 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+/**
+ * Filtro de seguridad personalizado que intercepta cada petición HTTP entrante a la API.
+ * Su función principal es actuar como "portero": extrae el token JWT de la cabecera "Authorization",
+ * lo verifica y, si es válido, identifica al usuario en el sistema.
+ * Extiende {@link OncePerRequestFilter} para garantizar que se ejecute una única vez por petición.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UsuarioRepository usuarioRepository;
 
+    /**
+     * Constructor con inyección de dependencias.
+     *
+     * @param jwtService        Servicio encargado de la lógica de extracción, lectura y validación de tokens JWT.
+     * @param usuarioRepository Repositorio para buscar en la base de datos (MongoDB) la información del usuario.
+     */
     @Autowired
     public JwtAuthenticationFilter(JwtService jwtService, UsuarioRepository usuarioRepository) {
         this.jwtService = jwtService;
         this.usuarioRepository = usuarioRepository;
     }
 
+    /**
+     * Lógica principal del filtro.
+     * Analiza la petición entrante en busca de un token Bearer, extrae el identificador del usuario,
+     * comprueba su existencia en la base de datos y, si todo es correcto, lo registra como 
+     * un usuario autenticado en el contexto de Spring Security.
+     *
+     * @param request     La petición HTTP entrante enviada por el cliente.
+     * @param response    La respuesta HTTP saliente.
+     * @param filterChain La cadena de filtros de seguridad para continuar el flujo si el token es válido o está ausente.
+     * @throws ServletException Si ocurre un error relacionado con el manejo de Servlets.
+     * @throws IOException      Si ocurre un error de entrada/salida durante el procesamiento.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {

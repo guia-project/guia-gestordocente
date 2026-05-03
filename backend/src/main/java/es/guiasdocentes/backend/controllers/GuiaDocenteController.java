@@ -40,12 +40,14 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.util.List;
 
 /**
- * Controlador REST que gestiona todas las operaciones relacionadas con las Guías Docentes.
- * Actúa como la interfaz de comunicación (API) entre el Frontend (React) y el Backend (Spring Boot).
+ * Controlador REST que gestiona todas las operaciones relacionadas con las
+ * Guías Docentes.
+ * Actúa como la interfaz de comunicación (API) entre el Frontend (React) y el
+ * Backend (Spring Boot).
  */
 @RestController
 @RequestMapping("/api/guias")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost", "http://localhost:80"})
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost", "http://localhost:80" })
 public class GuiaDocenteController {
 
     private final GuiaDocenteRepository repository;
@@ -55,15 +57,18 @@ public class GuiaDocenteController {
 
     /**
      * Constructor del controlador con Inyección de Dependencias.
-     * Spring Boot se encarga automáticamente de proporcionarnos las instancias de los servicios y repositorios.
+     * Spring Boot se encarga automáticamente de proporcionarnos las instancias de
+     * los servicios y repositorios.
      *
-     * @param repository Repositorio para operaciones CRUD en MongoDB.
-     * @param pdfService Servicio encargado de la lógica de generación de PDFs.
-     * @param aiService  Servicio para procesar texto usando Inteligencia Artificial Generativa.
+     * @param repository     Repositorio para operaciones CRUD en MongoDB.
+     * @param pdfService     Servicio encargado de la lógica de generación de PDFs.
+     * @param aiService      Servicio para procesar texto usando Inteligencia
+     *                       Artificial Generativa.
      * @param templateEngine Motor de plantillas Thymeleaf.
      */
     @Autowired
-    public GuiaDocenteController(GuiaDocenteRepository repository, PdfService pdfService, AIService aiService, SpringTemplateEngine templateEngine) {
+    public GuiaDocenteController(GuiaDocenteRepository repository, PdfService pdfService, AIService aiService,
+            SpringTemplateEngine templateEngine) {
         this.repository = repository;
         this.pdfService = pdfService;
         this.aiService = aiService;
@@ -71,7 +76,9 @@ public class GuiaDocenteController {
     }
 
     /**
-     * Extrae el ID del usuario que está haciendo la petición basándose en su Token JWT.
+     * Extrae el ID del usuario que está haciendo la petición basándose en su Token
+     * JWT.
+     * 
      * @return El ID del usuario autenticado.
      * @throws RuntimeException Si la petición llega sin usuario autenticado.
      */
@@ -85,9 +92,11 @@ public class GuiaDocenteController {
     }
 
     /**
-     * Crea y guarda una nueva Guía Docente en la base de datos asociada al usuario actual.
+     * Crea y guarda una nueva Guía Docente en la base de datos asociada al usuario
+     * actual.
      *
-     * @param nuevaGuiaDto Objeto que contiene los datos de la guía enviados desde el frontend.
+     * @param nuevaGuiaDto Objeto que contiene los datos de la guía enviados desde
+     *                     el frontend.
      * @return El documento guardado en la base de datos.
      */
     @PostMapping("/crear")
@@ -105,8 +114,9 @@ public class GuiaDocenteController {
             documento.setUsuarioId(miUsuarioId);
 
             GuiaDocenteDocument guardado = repository.save(documento);
-            System.out.println("Guardado en MongoDB con el ID: " + guardado.getId() + " para el usuario: " + miUsuarioId);
-            
+            System.out
+                    .println("Guardado en MongoDB con el ID: " + guardado.getId() + " para el usuario: " + miUsuarioId);
+
             return ResponseEntity.ok(guardado);
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,14 +125,16 @@ public class GuiaDocenteController {
     }
 
     /**
-     * Recupera todas las guías docentes almacenadas que pertenecen al usuario autenticado.
+     * Recupera todas las guías docentes almacenadas que pertenecen al usuario
+     * autenticado.
      *
      * @return Una lista con los documentos de guías docentes del profesor.
      */
     @GetMapping("/todas")
     public ResponseEntity<?> obtenerTodas() {
         try {
-            // Obtenemos solo las guías del usuario logueado usando el nuevo método del repositorio
+            // Obtenemos solo las guías del usuario logueado usando el nuevo método del
+            // repositorio
             String miUsuarioId = obtenerIdUsuarioAutenticado();
             List<GuiaDocenteDocument> misGuias = repository.findByUsuarioId(miUsuarioId);
             return ResponseEntity.ok(misGuias);
@@ -133,18 +145,21 @@ public class GuiaDocenteController {
     }
 
     /**
-     * Genera y descarga un archivo PDF de una guía docente específica, aplicando personalizaciones.
+     * Genera y descarga un archivo PDF de una guía docente específica, aplicando
+     * personalizaciones.
      *
-     * @param id El identificador único de la guía.
-     * @param request Objeto que contiene las opciones de personalización.
-     * @return Archivo PDF.
+     * @param id      El identificador único de la guía.
+     * @param request Objeto que contiene las opciones de personalización (color y
+     *                logo).
+     * @return Una respuesta HTTP que contiene el archivo PDF como un flujo de
+     *         bytes.
      */
     @PostMapping("/{id}/pdf")
     public ResponseEntity<byte[]> descargarPdf(@PathVariable String id, @RequestBody PersonalizacionRequest request) {
         try {
             GuiaDocenteDocument guia = repository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Guía no encontrada"));
-            
+
             String colorFormateado = "#" + (request.getColor() != null ? request.getColor() : "0056b3");
             String logoBase64 = request.getLogo();
 
@@ -166,7 +181,14 @@ public class GuiaDocenteController {
     }
 
     /**
-     * Procesa un PDF con Inteligencia Artificial.
+     * Recibe un archivo PDF físico, extrae su texto y utiliza Inteligencia
+     * Artificial
+     * para clasificar y mapear la información al formato JSON de la aplicación.
+     *
+     * @param file El archivo PDF subido por el usuario a través del formulario
+     *             Multipart.
+     * @return Un ResponseEntity que contiene un String en formato JSON estructurado
+     *         devuelto por la IA.
      */
     @PostMapping("/procesar-pdf-ia")
     public ResponseEntity<String> procesarPdfConIa(@RequestParam("file") MultipartFile file) {
@@ -186,7 +208,11 @@ public class GuiaDocenteController {
     }
 
     /**
-     * Elimina de forma permanente una guía docente.
+     * Elimina de forma permanente una guía docente de la base de datos.
+     *
+     * @param id El identificador único de la guía que se desea borrar.
+     * @return Un ResponseEntity con un mensaje confirmando el éxito o error de la
+     *         operación.
      */
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<String> eliminarGuia(@PathVariable String id) {
@@ -200,18 +226,25 @@ public class GuiaDocenteController {
 
     /**
      * Actualiza la información de una guía docente existente.
+     * Busca la guía original por su ID y sobrescribe todos sus campos con los
+     * nuevos datos recibidos.
+     *
+     * @param id              El identificador único de la guía a modificar.
+     * @param guiaActualizada Los nuevos datos de la guía encapsulados en un DTO.
+     * @return Un ResponseEntity indicando que la guía se ha actualizado
+     *         correctamente.
      */
     @PutMapping("/editar/{id}")
     public ResponseEntity<?> editarGuia(@PathVariable String id, @RequestBody GuiaDocenteDto guiaActualizada) {
         try {
             GuiaDocenteDocument existente = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Guía no encontrada"));
-            
+                    .orElseThrow(() -> new RuntimeException("Guía no encontrada"));
+
             existente.setNombreDocumento(guiaActualizada.getNombreDocumento());
             existente.setDatosGenerales(guiaActualizada.getDatosGenerales());
             existente.setProfesorado(guiaActualizada.getProfesorado());
             existente.setOtrosDatos(guiaActualizada.getOtrosDatos());
-            
+
             repository.save(existente);
             return ResponseEntity.ok("Guía actualizada correctamente");
         } catch (Exception e) {
@@ -220,37 +253,49 @@ public class GuiaDocenteController {
         }
     }
 
-   @GetMapping("/descargar-turtle/{id}")
-   public ResponseEntity<byte[]> descargarTurtle(@PathVariable String id) {
-    try {
-        GuiaDocenteDocument guia = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Guía no encontrada"));
+    /**
+     * Genera y descarga el grafo de conocimiento semántico de una guía docente en
+     * formato Turtle (.ttl).
+     * El flujo de trabajo consiste en inyectar los datos en una plantilla HTML con
+     * anotaciones RDFa
+     * utilizando Thymeleaf, y posteriormente usar Apache Any23 para extraer las
+     * tripletas RDF.
+     *
+     * @param id El identificador único de la guía docente a semantizar.
+     * @return Una respuesta HTTP que contiene el archivo .ttl como un flujo de
+     *         bytes (byte array).
+     */
+    @GetMapping("/descargar-turtle/{id}")
+    public ResponseEntity<byte[]> descargarTurtle(@PathVariable String id) {
+        try {
+            GuiaDocenteDocument guia = repository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Guía no encontrada"));
 
-        Context context = new Context();
-        context.setVariable("guia", guia);
-        
-        String htmlContent = templateEngine.process("guia-template", context);
+            Context context = new Context();
+            context.setVariable("guia", guia);
 
-        Any23 runner = new Any23();
-        DocumentSource source = new StringDocumentSource(htmlContent, "https://guia.org/");
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
-        try (TripleHandler handler = new TurtleWriter(out)) {
-            runner.extract(source, handler);
+            String htmlContent = templateEngine.process("guia-template", context);
+
+            Any23 runner = new Any23();
+            DocumentSource source = new StringDocumentSource(htmlContent, "https://guia.org/");
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            try (TripleHandler handler = new TurtleWriter(out)) {
+                runner.extract(source, handler);
+            }
+
+            byte[] turtleData = out.toByteArray();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"guia_" + id + ".ttl\"")
+                    .contentType(MediaType.parseMediaType("text/turtle"))
+                    .body(turtleData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
-
-        byte[] turtleData = out.toByteArray();
-        
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"guia_" + id + ".ttl\"")
-                .contentType(MediaType.parseMediaType("text/turtle"))
-                .body(turtleData);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.internalServerError().build();
     }
-}
 
     /**
      * DTO interno estático utilizado específicamente para estructurar los datos
@@ -260,9 +305,20 @@ public class GuiaDocenteController {
         private String color;
         private String logo;
 
-        public String getColor() { return color; }
-        public void setColor(String color) { this.color = color; }
-        public String getLogo() { return logo; }
-        public void setLogo(String logo) { this.logo = logo; }
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public String getLogo() {
+            return logo;
+        }
+
+        public void setLogo(String logo) {
+            this.logo = logo;
+        }
     }
 }

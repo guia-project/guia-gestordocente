@@ -14,7 +14,7 @@ export default function PantallaAuth({ onLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [mensaje, setMensaje] = useState('');
-    
+
     // ESTADO PARA EL MODAL "ACERCA DE"
     const [mostrarAbout, setMostrarAbout] = useState(false);
 
@@ -26,12 +26,12 @@ export default function PantallaAuth({ onLogin }) {
         // Si no existe (por ejemplo, alguien se bajó el repo y no configuró el .env), hacemos fallback a localhost por seguridad.
         const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
-        const url = esRegistro 
+        const url = esRegistro
             ? `${baseUrl}/api/auth/registro`
             : `${baseUrl}/api/auth/login`;
 
-        const payload = esRegistro 
-            ? { nombre, email, password } 
+        const payload = esRegistro
+            ? { nombre, email, password }
             : { email, password };
 
         try {
@@ -52,7 +52,7 @@ export default function PantallaAuth({ onLogin }) {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('usuarioNombre', data.nombre);
                     localStorage.setItem('usuarioId', data.usuarioId);
-                    
+
                     onLogin(data);
                 }
             } else {
@@ -66,9 +66,9 @@ export default function PantallaAuth({ onLogin }) {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#121212', position: 'relative' }}>
-            
+
             <div style={{ width: '100%', maxWidth: '420px', backgroundColor: '#1e1e1e', padding: '40px', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', border: '1px solid #333' }}>
-                
+
                 <h2 style={{ textAlign: 'center', color: '#e0e0e0', marginTop: 0, fontSize: '28px', fontWeight: '800', letterSpacing: '-0.5px' }}>
                     {esRegistro ? 'Crear Cuenta' : 'Bienvenido/a'}
                 </h2>
@@ -80,8 +80,8 @@ export default function PantallaAuth({ onLogin }) {
                     {esRegistro && (
                         <div>
                             <label style={{ fontWeight: '600', fontSize: '13px', color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Nombre completo</label>
-                            <input 
-                                type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required 
+                            <input
+                                type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required
                                 style={{ width: '100%', padding: '12px 15px', marginTop: '8px', borderRadius: '6px', border: '1px solid #333', backgroundColor: '#2a2a2a', color: '#fff', fontSize: '15px', boxSizing: 'border-box', outline: 'none', transition: 'border 0.3s' }}
                                 onFocus={(e) => e.target.style.border = '1px solid #3b82f6'}
                                 onBlur={(e) => e.target.style.border = '1px solid #333'}
@@ -91,8 +91,8 @@ export default function PantallaAuth({ onLogin }) {
 
                     <div>
                         <label style={{ fontWeight: '600', fontSize: '13px', color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email</label>
-                        <input 
-                            type="email" value={email} onChange={(e) => setEmail(e.target.value)} required 
+                        <input
+                            type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
                             style={{ width: '100%', padding: '12px 15px', marginTop: '8px', borderRadius: '6px', border: '1px solid #333', backgroundColor: '#2a2a2a', color: '#fff', fontSize: '15px', boxSizing: 'border-box', outline: 'none', transition: 'border 0.3s' }}
                             onFocus={(e) => e.target.style.border = '1px solid #3b82f6'}
                             onBlur={(e) => e.target.style.border = '1px solid #333'}
@@ -101,8 +101,8 @@ export default function PantallaAuth({ onLogin }) {
 
                     <div>
                         <label style={{ fontWeight: '600', fontSize: '13px', color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contraseña</label>
-                        <input 
-                            type="password" value={password} onChange={(e) => setPassword(e.target.value)} required 
+                        <input
+                            type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
                             style={{ width: '100%', padding: '12px 15px', marginTop: '8px', borderRadius: '6px', border: '1px solid #333', backgroundColor: '#2a2a2a', color: '#fff', fontSize: '15px', boxSizing: 'border-box', outline: 'none', transition: 'border 0.3s' }}
                             onFocus={(e) => e.target.style.border = '1px solid #3b82f6'}
                             onBlur={(e) => e.target.style.border = '1px solid #333'}
@@ -110,8 +110,8 @@ export default function PantallaAuth({ onLogin }) {
                     </div>
 
                     <button type="submit" style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '14px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px', marginTop: '10px', transition: 'background-color 0.2s', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)' }}
-                            onMouseOver={(e) => e.target.style.backgroundColor = '#2563eb'}
-                            onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}>
+                        onMouseOver={(e) => e.target.style.backgroundColor = '#2563eb'}
+                        onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}>
                         {esRegistro ? 'Registrarse' : 'Entrar al Gestor'}
                     </button>
                 </form>
@@ -126,7 +126,7 @@ export default function PantallaAuth({ onLogin }) {
                     <p style={{ fontSize: '14px', color: '#888', margin: 0 }}>
                         {esRegistro ? '¿Ya tienes una cuenta?' : '¿No tienes cuenta?'}
                     </p>
-                    <button 
+                    <button
                         onClick={() => { setEsRegistro(!esRegistro); setMensaje(''); }}
                         style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', fontWeight: '600', marginTop: '8px', fontSize: '14px' }}
                     >
@@ -136,8 +136,8 @@ export default function PantallaAuth({ onLogin }) {
             </div>
 
             {/* BOTÓN "ACERCA DE" */}
-            <button 
-                onClick={() => setMostrarAbout(true)} 
+            <button
+                onClick={() => setMostrarAbout(true)}
                 style={{ position: 'absolute', bottom: '20px', right: '20px', background: 'none', border: '1px solid #555', color: '#aaa', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s', fontSize: '13px' }}
                 onMouseOver={(e) => { e.target.style.color = '#fff'; e.target.style.borderColor = '#888'; }}
                 onMouseOut={(e) => { e.target.style.color = '#aaa'; e.target.style.borderColor = '#555'; }}
@@ -145,27 +145,41 @@ export default function PantallaAuth({ onLogin }) {
                 ℹ️ Acerca del Proyecto
             </button>
 
-            {/* MODAL "ACERCA DE" CORREGIDO */}
+            {/* MODAL "ACERCA DE" ACTUALIZADO */}
             {mostrarAbout && (
                 <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
                     <div style={{ backgroundColor: '#1e1e1e', padding: '40px', borderRadius: '12px', border: '1px solid #333', maxWidth: '500px', width: '90%', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
                         <h2 style={{ color: '#3b82f6', marginBottom: '10px', fontSize: '24px' }}>Gestor de Guías Docentes</h2>
-                        
+
                         <p style={{ color: '#e0e0e0', lineHeight: '1.6', marginBottom: '15px', fontSize: '15px' }}>
                             Plataforma integral diseñada para que las universidades e instituciones educativas puedan crear, editar, estandarizar y gestionar sus guías docentes de manera eficiente.
                         </p>
-                        
-                        <p style={{ color: '#aaa', lineHeight: '1.6', marginBottom: '30px', fontSize: '14px' }}>
-                            Aplicación desarrollada como <strong>Trabajo de Fin de Grado (TFG)</strong>. Construida sobre una arquitectura sólida utilizando <strong>React</strong> para el frontend y <strong>Spring Boot (Java)</strong> con <strong>MongoDB</strong> para el backend, incorporando además capacidades de <strong>Inteligencia Artificial Generativa</strong> y exportación a formatos de <strong>Web Semántica (RDF)</strong> y PDF.
+
+                        <p style={{ color: '#e0e0e0', lineHeight: '1.6', marginBottom: '15px', fontSize: '15px' }}>
+                            Este portal se enmarca en el ecosistema de servicios desarrollados en el contexto del{' '}
+                            <a
+                                href="https://guia-project.github.io/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}
+                                onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+                                onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+                            >
+                                proyecto GUIA (M230020126A-AJCA)
+                            </a>.
                         </p>
-                        
+
+                        <p style={{ color: '#aaa', lineHeight: '1.6', marginBottom: '30px', fontSize: '14px' }}>
+                            Aplicación desarrollada como <strong>Trabajo de Fin de Grado (TFG)</strong>. Construida sobre una arquitectura sólida utilizando <strong>React</strong> para el frontend y <strong>Spring Boot (Java)</strong> con <strong>MongoDB</strong> para el backend, incorporando además exportación a formatos de <strong>Web Semántica (RDF)</strong> y PDF.
+                        </p>
+
                         <div style={{ backgroundColor: '#2a2a2a', padding: '25px', borderRadius: '8px', marginBottom: '30px', border: '1px solid #444' }}>
                             <p style={{ margin: '0 0 12px 0', color: '#e0e0e0', fontSize: '16px' }}><strong>Autor:</strong> Alejandro Royo López de Felipe</p>
                             <p style={{ margin: 0, color: '#10b981', fontWeight: 'bold' }}>Universidad Politécnica de Madrid (UPM)</p>
                         </div>
-                        
-                        <button 
-                            onClick={() => setMostrarAbout(false)} 
+
+                        <button
+                            onClick={() => setMostrarAbout(false)}
                             style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '12px 30px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', transition: 'background-color 0.2s' }}
                             onMouseOver={(e) => e.target.style.backgroundColor = '#2563eb'}
                             onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}
@@ -175,7 +189,7 @@ export default function PantallaAuth({ onLogin }) {
                     </div>
                 </div>
             )}
-            
+
         </div>
     );
 }
