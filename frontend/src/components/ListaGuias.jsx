@@ -38,12 +38,25 @@ export default function ListaGuias({ onEditar }) {
         localStorage.setItem('logosGuias', JSON.stringify(logos));
     }, [logos]);
 
+    // FETCH 1 ACTUALIZADO: Añadido el token para obtener todas las guías
     useEffect(() => {
         const obtenerGuias = async () => {
             try {
-                const response = await fetch(`${baseUrl}/api/guias/todas`);
-                const data = await response.json();
-                setGuias(data);
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${baseUrl}/api/guias/todas`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    setGuias(data);
+                } else {
+                    console.error("Acceso denegado o token expirado al cargar guías.");
+                }
                 setCargando(false);
             } catch (error) {
                 console.error("Error al cargar las guías:", error);
@@ -53,12 +66,23 @@ export default function ListaGuias({ onEditar }) {
         obtenerGuias();
     }, [baseUrl]);
 
+    // FETCH 2 ACTUALIZADO: Añadido el token para eliminar
     const eliminarGuia = async (idGuia) => {
         if (!window.confirm("¿Estás seguro de que quieres eliminar esta guía docente? Esta acción no se puede deshacer.")) return;
         try {
-            const response = await fetch(`${baseUrl}/api/guias/eliminar/${idGuia}`, { method: 'DELETE' });
-            if (response.ok) setGuias(guias.filter(guia => guia.id !== idGuia));
-            else alert("Error al eliminar la guía del servidor.");
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${baseUrl}/api/guias/eliminar/${idGuia}`, { 
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (response.ok) {
+                setGuias(guias.filter(guia => guia.id !== idGuia));
+            } else {
+                alert("Error al eliminar la guía del servidor. Permiso denegado.");
+            }
         } catch (error) {
             console.error("Error de red:", error);
             alert("Error de conexión al intentar eliminar.");
@@ -79,15 +103,20 @@ export default function ListaGuias({ onEditar }) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    // FETCH 3 ACTUALIZADO: Añadido el token para descargar el PDF
     const descargarPdf = async (idGuia, tituloGuia) => {
         const hexColor = colores[idGuia] || '#0056b3';
         const colorSinAlmohadilla = hexColor.replace('#', '');
         const logoBase64 = logos[idGuia] || null;
 
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${baseUrl}/api/guias/${idGuia}/pdf`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ color: colorSinAlmohadilla, logo: logoBase64 })
             });
 
@@ -102,7 +131,7 @@ export default function ListaGuias({ onEditar }) {
                 a.remove();
                 window.URL.revokeObjectURL(url);
             } else {
-                alert("Error al generar el PDF. Asegúrate de que el backend está listo.");
+                alert("Error al generar el PDF. Permiso denegado o sesión expirada.");
             }
         } catch (error) {
             console.error(error);
@@ -110,7 +139,7 @@ export default function ListaGuias({ onEditar }) {
         }
     };
 
-    // NUEVA FUNCIÓN: Descargar el grafo semántico en formato Turtle
+    // FETCH 4: (¡Este ya lo tenías perfecto!)
     const handleDescargarTurtle = async (idGuia) => {
         try {
             const token = localStorage.getItem('token'); 
@@ -231,7 +260,6 @@ export default function ListaGuias({ onEditar }) {
                                         📄 PDF
                                     </button>
 
-                                    {/* BOTÓN ACTUALIZADO PARA DESCARGAR TURTLE */}
                                     <button 
                                         onClick={() => handleDescargarTurtle(guia.id)} 
                                         style={btnStyle}

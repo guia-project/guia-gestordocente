@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import es.guiasdocentes.backend.models.UsuarioDocument;
+
 import es.guiasdocentes.backend.services.PdfService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -56,7 +60,7 @@ public class GuiaDocenteController {
      * @param repository Repositorio para operaciones CRUD en MongoDB.
      * @param pdfService Servicio encargado de la lógica de generación de PDFs.
      * @param aiService  Servicio para procesar texto usando Inteligencia Artificial Generativa.
-     * @param templateEngine
+     * @param templateEngine Motor de plantillas Thymeleaf.
      */
     @Autowired
     public GuiaDocenteController(GuiaDocenteRepository repository, PdfService pdfService, AIService aiService, SpringTemplateEngine templateEngine) {
@@ -67,61 +71,85 @@ public class GuiaDocenteController {
     }
 
     /**
-     * Crea y guarda una nueva Guía Docente en la base de datos.
-     * Convierte el DTO (Data Transfer Object) recibido desde React en un Documento de MongoDB.
-     *
-     * @param nuevaGuiaDto Objeto que contiene los datos de la guía enviados desde el formulario frontend.
-     * @return El documento guardado en la base de datos (incluyendo su nuevo ID generado).
+     * Extrae el ID del usuario que está haciendo la petición basándose en su Token JWT.
+     * @return El ID del usuario autenticado.
+     * @throws RuntimeException Si la petición llega sin usuario autenticado.
      */
-    @PostMapping("/crear")
-    public GuiaDocenteDocument crearGuia(@RequestBody GuiaDocenteDto nuevaGuiaDto) {
-
-        GuiaDocenteDocument documento = new GuiaDocenteDocument();
-        documento.setNombreDocumento(nuevaGuiaDto.getNombreDocumento());
-        documento.setDatosGenerales(nuevaGuiaDto.getDatosGenerales());
-        documento.setProfesorado(nuevaGuiaDto.getProfesorado());
-        documento.setOtrosDatos(nuevaGuiaDto.getOtrosDatos());
-
-        GuiaDocenteDocument guardado = repository.save(documento);
-
-        System.out.println("Guardado en MongoDB con el ID: " + guardado.getId());
-        return guardado;
+    private String obtenerIdUsuarioAutenticado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof UsuarioDocument) {
+            UsuarioDocument usuario = (UsuarioDocument) auth.getPrincipal();
+            return usuario.getId();
+        }
+        throw new RuntimeException("No se ha encontrado un usuario autenticado");
     }
 
     /**
-     * Recupera todas las guías docentes almacenadas en la base de datos.
+     * Crea y guarda una nueva Guía Docente en la base de datos asociada al usuario actual.
      *
-     * @return Una lista con todos los documentos de guías docentes.
+     * @param nuevaGuiaDto Objeto que contiene los datos de la guía enviados desde el frontend.
+     * @return El documento guardado en la base de datos.
+     */
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearGuia(@RequestBody GuiaDocenteDto nuevaGuiaDto) {
+        try {
+            GuiaDocenteDocument documento = new GuiaDocenteDocument();
+            documento.setNombreDocumento(nuevaGuiaDto.getNombreDocumento());
+            documento.setDatosGenerales(nuevaGuiaDto.getDatosGenerales());
+            documento.setProfesorado(nuevaGuiaDto.getProfesorado());
+            documento.setOtrosDatos(nuevaGuiaDto.getOtrosDatos());
+
+            // 1. Obtenemos el ID del profesor que está logueado
+            String miUsuarioId = obtenerIdUsuarioAutenticado();
+            // 2. Asociamos la guía a ese profesor
+            documento.setUsuarioId(miUsuarioId);
+
+            GuiaDocenteDocument guardado = repository.save(documento);
+            System.out.println("Guardado en MongoDB con el ID: " + guardado.getId() + " para el usuario: " + miUsuarioId);
+            
+            return ResponseEntity.ok(guardado);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error al crear la guía");
+        }
+    }
+
+    /**
+     * Recupera todas las guías docentes almacenadas que pertenecen al usuario autenticado.
+     *
+     * @return Una lista con los documentos de guías docentes del profesor.
      */
     @GetMapping("/todas")
-    public List<GuiaDocenteDocument> obtenerTodas() {
-        return repository.findAll();
+    public ResponseEntity<?> obtenerTodas() {
+        try {
+            // Obtenemos solo las guías del usuario logueado usando el nuevo método del repositorio
+            String miUsuarioId = obtenerIdUsuarioAutenticado();
+            List<GuiaDocenteDocument> misGuias = repository.findByUsuarioId(miUsuarioId);
+            return ResponseEntity.ok(misGuias);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error al obtener las guías");
+        }
     }
 
     /**
      * Genera y descarga un archivo PDF de una guía docente específica, aplicando personalizaciones.
-     * Nota: Utilizamos un método POST en lugar de GET para poder recibir un cuerpo (body) grande,
-     * ya que el logo personalizado en formato Base64 puede pesar varios megabytes.
      *
-     * @param id El identificador único de la guía en la base de datos.
-     * @param request Objeto que contiene las opciones de personalización (color Hex y Logo Base64).
-     * @return Una respuesta HTTP que contiene el archivo PDF como un flujo de bytes (byte array).
+     * @param id El identificador único de la guía.
+     * @param request Objeto que contiene las opciones de personalización.
+     * @return Archivo PDF.
      */
     @PostMapping("/{id}/pdf")
     public ResponseEntity<byte[]> descargarPdf(@PathVariable String id, @RequestBody PersonalizacionRequest request) {
         try {
-            // Buscamos la guía en la base de datos por su ID
             GuiaDocenteDocument guia = repository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Guía no encontrada"));
             
-            // Si no envían color, ponemos el azul por defecto
             String colorFormateado = "#" + (request.getColor() != null ? request.getColor() : "0056b3");
             String logoBase64 = request.getLogo();
 
-            // Generamos el PDF pasándole la guía, el color y el logo
             byte[] pdfBytes = pdfService.generarGuiaPdf(guia, colorFormateado, logoBase64);
 
-            // Configuramos la respuesta
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment",
@@ -138,11 +166,7 @@ public class GuiaDocenteController {
     }
 
     /**
-     * Recibe un archivo PDF físico, extrae su texto y utiliza Inteligencia Artificial
-     * para clasificar y mapear la información al formato JSON de nuestra aplicación.
-     *
-     * @param file El archivo PDF subido por el usuario a través del formulario Multipart.
-     * @return Un String en formato JSON estructurado devuelto por la IA.
+     * Procesa un PDF con Inteligencia Artificial.
      */
     @PostMapping("/procesar-pdf-ia")
     public ResponseEntity<String> procesarPdfConIa(@RequestParam("file") MultipartFile file) {
@@ -162,10 +186,7 @@ public class GuiaDocenteController {
     }
 
     /**
-     * Elimina de forma permanente una guía docente de la base de datos.
-     *
-     * @param id El identificador único de la guía que se desea borrar.
-     * @return Un mensaje de confirmación de éxito o error.
+     * Elimina de forma permanente una guía docente.
      */
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<String> eliminarGuia(@PathVariable String id) {
@@ -179,21 +200,18 @@ public class GuiaDocenteController {
 
     /**
      * Actualiza la información de una guía docente existente.
-     * Busca la guía original por su ID y sobrescribe todos sus campos con los nuevos datos.
-     *
-     * @param id El identificador único de la guía a modificar.
-     * @param guiaActualizada Los nuevos datos de la guía recibidos desde el formulario frontend.
-     * @return Un mensaje de confirmación de éxito o error.
      */
     @PutMapping("/editar/{id}")
     public ResponseEntity<?> editarGuia(@PathVariable String id, @RequestBody GuiaDocenteDto guiaActualizada) {
         try {
             GuiaDocenteDocument existente = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Guía no encontrada"));
+            
             existente.setNombreDocumento(guiaActualizada.getNombreDocumento());
             existente.setDatosGenerales(guiaActualizada.getDatosGenerales());
             existente.setProfesorado(guiaActualizada.getProfesorado());
             existente.setOtrosDatos(guiaActualizada.getOtrosDatos());
+            
             repository.save(existente);
             return ResponseEntity.ok("Guía actualizada correctamente");
         } catch (Exception e) {
@@ -203,20 +221,16 @@ public class GuiaDocenteController {
     }
 
    @GetMapping("/descargar-turtle/{id}")
-public ResponseEntity<byte[]> descargarTurtle(@PathVariable String id) {
+   public ResponseEntity<byte[]> descargarTurtle(@PathVariable String id) {
     try {
-        // 1. Obtener datos usando tu repositorio real
         GuiaDocenteDocument guia = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Guía no encontrada"));
 
-        // 2. Preparar el contexto de Thymeleaf
         Context context = new Context();
         context.setVariable("guia", guia);
         
-        // Aquí generamos el HTML dinámico
         String htmlContent = templateEngine.process("guia-template", context);
 
-        // 3. Configurar Any23 para extraer RDFa y escribir en Turtle
         Any23 runner = new Any23();
         DocumentSource source = new StringDocumentSource(htmlContent, "https://guia.org/");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
