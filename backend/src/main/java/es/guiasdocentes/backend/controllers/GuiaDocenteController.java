@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.security.core.Authentication;
@@ -23,12 +22,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import es.guiasdocentes.backend.dto.GuiaDocenteDto;
 import es.guiasdocentes.backend.models.GuiaDocenteDocument;
 import es.guiasdocentes.backend.repositories.GuiaDocenteRepository;
-import es.guiasdocentes.backend.services.AIService;
 
 import org.apache.any23.source.StringDocumentSource;
 import org.apache.any23.writer.TurtleWriter;
@@ -52,7 +48,6 @@ public class GuiaDocenteController {
 
     private final GuiaDocenteRepository repository;
     private final PdfService pdfService;
-    private final AIService aiService;
     private final SpringTemplateEngine templateEngine;
 
     /**
@@ -62,16 +57,13 @@ public class GuiaDocenteController {
      *
      * @param repository     Repositorio para operaciones CRUD en MongoDB.
      * @param pdfService     Servicio encargado de la lógica de generación de PDFs.
-     * @param aiService      Servicio para procesar texto usando Inteligencia
-     *                       Artificial Generativa.
      * @param templateEngine Motor de plantillas Thymeleaf.
      */
     @Autowired
-    public GuiaDocenteController(GuiaDocenteRepository repository, PdfService pdfService, AIService aiService,
+    public GuiaDocenteController(GuiaDocenteRepository repository, PdfService pdfService,
             SpringTemplateEngine templateEngine) {
         this.repository = repository;
         this.pdfService = pdfService;
-        this.aiService = aiService;
         this.templateEngine = templateEngine;
     }
 
@@ -177,33 +169,6 @@ public class GuiaDocenteController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    /**
-     * Recibe un archivo PDF físico, extrae su texto y utiliza Inteligencia
-     * Artificial
-     * para clasificar y mapear la información al formato JSON de la aplicación.
-     *
-     * @param file El archivo PDF subido por el usuario a través del formulario
-     *             Multipart.
-     * @return Un ResponseEntity que contiene un String en formato JSON estructurado
-     *         devuelto por la IA.
-     */
-    @PostMapping("/procesar-pdf-ia")
-    public ResponseEntity<String> procesarPdfConIa(@RequestParam("file") MultipartFile file) {
-        try {
-            System.out.println("Recibido archivo: " + file.getOriginalFilename());
-            String textoPdf = aiService.extraerTextoDePdf(file);
-            System.out.println("Texto extraído, analizando con IA...");
-            String jsonDeGemini = aiService.obtenerJsonIA(textoPdf);
-            System.out.println("Respuesta de OpenAI recibida con éxito.");
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(jsonDeGemini);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("{\"error\": \"Error al procesar el PDF con IA\"}");
         }
     }
 

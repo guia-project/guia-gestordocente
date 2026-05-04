@@ -5,7 +5,6 @@ import Modal from './Modal';
 import SeccionDatosGenerales from './SeccionDatosGenerales';
 import SeccionProfesorado from './SeccionProfesorado';
 import SeccionOtrosDatos from './SeccionOtrosDatos';
-import SubidaPdfIa from './SubidaPdfIa';
 import SeccionCronograma from './SeccionCronograma';
 import SeccionCompetencias from './SeccionCompetencias';
 import SeccionActividadesEvaluacion from './SeccionActividadesEvaluacion';
@@ -26,7 +25,6 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
     
     // --- 1. ESTADO GLOBAL (Single Source of Truth) ---
     const [idEdicion, setIdEdicion] = useState(null);
-    const [mostrarIA, setMostrarIA] = useState(false);
     const [estadoEnvio, setEstadoEnvio] = useState('');
     const [nombreDocumento, setNombreDocumento] = useState('');
 
@@ -196,73 +194,7 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
         }
     }, [guiaEnEdicion]);
 
-    // --- 3. RELLENADO DE DATOS DESDE IA ---
-    const rellenarConIa = (datosIa) => {
-        if (datosIa["Datos Generales"]) {
-            const dg = datosIa["Datos Generales"];
-            setDatosGenerales({
-                nombreAsignatura: dg["Nombre asignatura"] || '', codigoAsignatura: dg["Código asignatura"] || '',
-                creditos: dg["No créditos"] || '', titulacion: dg["Titulación"] || '', curso: dg["Curso"] || '',
-                cursoImplantacion: dg["Curso implantación"] || '', anioPlanEstudios: dg["Año plan de estudios"] || '',
-                semestre: dg["Semestre"] || '', periodo: dg["Período de impartición"] || '', caracter: dg["Carácter"] || '',
-                idioma: dg["Idioma"] || '', modalidad: dg["Modalidad"] || '', modulo: dg["Módulo"] || '',
-                rama: dg["Rama de conocimiento"] || '', area: dg["Área"] || '', departamento: dg["Departamento"] || '',
-                centro: dg["Centro"] || ''
-            });
-        }
-
-        if (datosIa["Profesorado"] && datosIa["Profesorado"].length > 0) {
-            setProfesores(datosIa["Profesorado"].map(p => ({
-                Nombre: p["Nombre"] || '', Email: p["Email"] || '', Telefono: p["Telefono"] || '',
-                Despacho: p["Despacho"] || '', HorarioTutorias: p["Horario tutorías"] || '', UrlWeb: p["URL web"] || '',
-                Grupo: p["Grupo"] || '', esCoordinador: p["Es coordinador"] || false
-            })));
-        }
-
-        if (datosIa["Otros Datos"]) {
-            const od = datosIa["Otros Datos"];
-
-            setOtrosDatos({
-                metodologia: od["Metodología"] || '', evaluacion: od["Evaluación"] || '',
-                normasRealizacionPruebas: od["Normas realización pruebas"] || '',
-                ausenciaMaxima: od["Ausencia máxima"] || '', otraInformacion: od["Otra información"] || ''
-            });
-
-            // Mapeos Jerárquicos de IA
-            if (Array.isArray(od["Conocimientos previos recomendados"])) {
-                setConocimientos(od["Conocimientos previos recomendados"].map(c => ({ texto: c["Texto"] || c || '', nivel: c["Nivel"] || 0 })));
-            }
-            if (Array.isArray(od["Objetivos"])) {
-                setObjetivos(od["Objetivos"].map(o => ({ texto: o["Texto"] || o || '', nivel: o["Nivel"] || 0 })));
-            }
-            
-            if (Array.isArray(od["Contenidos"])) {
-                setContenidos(od["Contenidos"].map(c => ({ tema: c["Tema"] || '', nivel: c["Nivel"] || 0 })));
-            }
-
-            if (Array.isArray(od["Bibliografía"])) setBibliografia(od["Bibliografía"].map(b => ({ tipo: b["Tipo"] || 'Libro', referencia: b["Referencia"] || '' })));
-            if (Array.isArray(od["Competencias"])) setCompetencias(od["Competencias"].map(c => ({ tipo: c["Tipo"] || 'General', codigo: c["Código"] || '', descripcion: c["Descripción"] || '' })));
-            if (Array.isArray(od["Actividades de evaluación"])) {
-                setActividadesEvaluacion(od["Actividades de evaluación"].map(a => ({ 
-                    nombre: a["Nombre"] || '', descripcion: a["Descripción"] || '', competencias: a["Competencias"] || '', tipo: a["Tipo"] || 'Progresiva', peso: a["Peso"] || '', notaMinima: a["Nota mínima"] || '' 
-                })));
-            }
-            if (Array.isArray(od["Cronograma"])) {
-                setCronograma(od["Cronograma"].map(c => ({ 
-                    semana: c["Semana"] || '', 
-                    actividades: Array.isArray(c["Actividades"]) ? c["Actividades"].map(act => ({ 
-                        // NUEVO: La IA también rellenará la clasificación
-                        clasificacion: act["Clasificación"] || 'Tipo 1',
-                        tipo: act["Tipo"] || 'Lección Magistral', 
-                        descripcion: act["Descripción"] || '', 
-                        horas: act["Horas"] || '' 
-                    })) : [] 
-                })));
-            }
-        }
-    };
-
-    // --- 4. HANDLERS (Elevación de estado) ---
+    // --- 3. HANDLERS (Elevación de estado) ---
     const handleChangeGenerales = (e) => setDatosGenerales({ ...datosGenerales, [e.target.name]: e.target.value });
     const handleChangeOtrosDatos = (e) => setOtrosDatos({ ...otrosDatos, [e.target.name]: e.target.value });
 
@@ -341,7 +273,7 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
         setCronograma(nuevoCrono);
     };
 
-    // --- 5. ENVÍO AL BACKEND (Submit y Data Sanitization) ---
+    // --- 4. ENVÍO AL BACKEND (Submit y Data Sanitization) ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         setEstadoEnvio('Enviando...');
@@ -416,17 +348,13 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
         }
     };
 
-    // --- 6. RENDERIZADO VISUAL ---
+    // --- 5. RENDERIZADO VISUAL ---
     return (
         <div className="formulario-container">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '15px' }}>
                 <h2 style={{ margin: 0, border: 'none' }}>{idEdicion ? '✏️ Editando Guía Docente' : 'Crear Nueva Guía Docente'}</h2>
-                <button type="button" onClick={() => setMostrarIA(!mostrarIA)} style={{ backgroundColor: 'transparent', color: '#a855f7', border: '1px solid #a855f7', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', transition: 'all 0.2s' }}>
-                    {mostrarIA ? '❌ Ocultar Inteligencia Artificial' : '✨ Autocompletar con IA'}
-                </button>
             </div>
 
-            {mostrarIA && <SubidaPdfIa onDatosExtraidos={rellenarConIa} />}
 
             <div style={{ marginBottom: '20px', backgroundColor: '#1e1e1e', padding: '20px', borderRadius: '8px', border: '1px solid #333' }}>
                 <label style={{ fontWeight: 'bold', fontSize: '14px', color: '#3b82f6', display: 'block', marginBottom: '8px' }}>Nombre para guardar este documento:</label>
