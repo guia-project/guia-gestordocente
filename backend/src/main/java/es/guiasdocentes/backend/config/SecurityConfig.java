@@ -94,7 +94,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Orígenes: Frontend en desarrollo (5173) y entornos Docker/Producción (localhost/127.0.0.1)
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost", "http://127.0.0.1"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost", "http://127.0.0.1", "http://localhost:9003"));
         
         // Métodos permitidos (OPTIONS es crucial para preflight requests del navegador)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
