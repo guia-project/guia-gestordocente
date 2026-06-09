@@ -64,14 +64,14 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable()) // Desactivado por ser una API REST orientada a tokens
             
-            // 🔒 Hacemos que la API no use cookies de sesión
+            // Hacemos que la API no use cookies de sesión
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             
             .authorizeHttpRequests(auth -> auth
                 // Solo /api/auth/login y /api/auth/registro son públicos
                 .requestMatchers("/api/auth/**").permitAll()
                 
-                // 🛑 Todas las demás rutas requieren un token válido
+                // Todas las demás rutas requieren un token válido
                 .anyRequest().authenticated()
             )
             
@@ -96,10 +96,10 @@ public class SecurityConfig {
         // Orígenes: Frontend en desarrollo (5173) y entornos Docker/Producción (localhost/127.0.0.1)
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost", "http://127.0.0.1", "http://localhost:9003"));
         
-        // Métodos permitidos (OPTIONS es crucial para preflight requests del navegador)
+        // Métodos permitidos
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         
-        // Cabeceras permitidas (Authorization es crítica para mandar el Bearer Token)
+        // Cabeceras permitidas
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control"));
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

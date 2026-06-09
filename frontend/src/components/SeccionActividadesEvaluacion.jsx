@@ -58,7 +58,7 @@ export default function SeccionActividadesEvaluacion({ actividades, onActividadC
                             {act.descripcion || <span style={{fontStyle:'italic', color:'#555'}}>Sin descripción</span>}
                         </span>
                         
-                        {/* NUEVO: Visualización de las competencias en la vista previa */}
+                        {/* Visualización de las competencias en la vista previa */}
                         {act.competencias && (
                             <span style={{ color: '#10b981', fontSize: '12px', display: 'inline-block', backgroundColor: '#064e3b', padding: '4px 8px', borderRadius: '4px', border: '1px solid #059669' }}>
                                 🎯 Competencias: {act.competencias}
@@ -76,7 +76,7 @@ export default function SeccionActividadesEvaluacion({ actividades, onActividadC
                         <div key={index} style={{ display: 'flex', flexDirection: 'column', gap: '10px', backgroundColor: '#2a2a2a', padding: '15px', borderRadius: '8px', border: '1px solid #444' }}>
                             
                             <div style={{ display: 'flex', gap: '10px' }}>
-                                {/* CRÍTICO: Uso de la propiedad 'flex' para establecer proporciones. 
+                                {/* Uso de la propiedad 'flex' para establecer proporciones. 
                                     El Nombre ocupa el doble de espacio (flex: 2) que el resto (flex: 1) */}
                                 <div style={{ flex: 2 }}>
                                     <label style={{ display: 'block', color: '#aaa', fontSize: '11px', textTransform: 'uppercase', marginBottom: '5px' }}>Nombre</label>

@@ -22,7 +22,7 @@ export default function PantallaAuth({ onLogin }) {
         e.preventDefault();
         setMensaje('Cargando...');
 
-        // CRÍTICO: Leemos la URL base desde las variables de entorno (Ocultas en GitHub).
+        // Leemos la URL base desde las variables de entorno (Ocultas en GitHub).
         // Si no existe (por ejemplo, alguien se bajó el repo y no configuró el .env), hacemos fallback a localhost por seguridad.
         const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 

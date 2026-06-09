@@ -3,7 +3,6 @@ package es.guiasdocentes.backend.controllers;
 import org.apache.any23.Any23;
 import org.apache.any23.source.DocumentSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +42,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/guias")
-@CrossOrigin(origins = { "http://localhost:5173", "http://localhost", "http://localhost:80" })
 public class GuiaDocenteController {
 
     private final GuiaDocenteRepository repository;

@@ -68,15 +68,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        jwt = authHeader.substring(7); // Quitamos la palabra "Bearer "
+        jwt = authHeader.substring(7);
         
         try {
-            // Usamos tu método personalizado
             usuarioId = jwtService.extraerUsuarioId(jwt);
 
             if (usuarioId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 
-                // Buscamos por ID en lugar de email, ya que tu token lo permite
+                // Buscamos por ID
                 Optional<UsuarioDocument> usuarioOpt = usuarioRepository.findById(usuarioId);
 
                 if (usuarioOpt.isPresent() && jwtService.esTokenValido(jwt, usuarioId)) {
@@ -87,7 +86,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    // Le decimos a Spring "Este usuario está autenticado y tiene permiso"
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }

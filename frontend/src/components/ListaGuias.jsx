@@ -89,7 +89,7 @@ export default function ListaGuias({ onEditar }) {
         }
     };
 
-    // MAGIA DE LA FASE 2: DUPLICAR GUÍA (Deep Copy)
+    // DUPLICAR GUÍA (Deep Copy)
     const duplicarGuia = (guiaOriginal) => {
         if (!onEditar) return;
         
@@ -103,7 +103,7 @@ export default function ListaGuias({ onEditar }) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // FETCH 3 ACTUALIZADO: Añadido el token para descargar el PDF
+    // FETCH 3: Token para descargar el PDF
     const descargarPdf = async (idGuia, tituloGuia) => {
         const hexColor = colores[idGuia] || '#0056b3';
         const colorSinAlmohadilla = hexColor.replace('#', '');
@@ -139,7 +139,7 @@ export default function ListaGuias({ onEditar }) {
         }
     };
 
-    // FETCH 4: (¡Este ya lo tenías perfecto!)
+    // FETCH 4
     const handleDescargarTurtle = async (idGuia) => {
         try {
             const token = localStorage.getItem('token'); 

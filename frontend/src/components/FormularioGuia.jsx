@@ -43,7 +43,6 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
     const [competencias, setCompetencias] = useState([{ tipo: 'General', codigo: '', descripcion: '' }]);
     const [actividadesEvaluacion, setActividadesEvaluacion] = useState([{ nombre: '', descripcion: '', competencias: '', tipo: 'Progresiva', peso: '', notaMinima: '' }]);
     
-    // ACTUALIZACIÓN JERÁRQUICA: Ahora son objetos, no strings planos.
     const [conocimientos, setConocimientos] = useState([{ texto: '', nivel: 0 }]);
     const [objetivos, setObjetivos] = useState([{ texto: '', nivel: 0 }]);
     
@@ -53,7 +52,6 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
     const [cronograma, setCronograma] = useState(
         Array.from({ length: 17 }, (_, i) => ({ 
             semana: `${i + 1}`, 
-            // NUEVO: Añadido el campo clasificacion por defecto
             actividades: [{ clasificacion: 'Tipo 1', tipo: 'Lección Magistral', descripcion: '', horas: '' }] 
         }))
     );
@@ -207,7 +205,6 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
     const agregarProfesor = () => setProfesores([...profesores, { Nombre: '', Email: '', Telefono: '', Despacho: '', HorarioTutorias: '', UrlWeb: '', Grupo: '', esCoordinador: false }]);
     const eliminarProfesor = (index) => setProfesores(profesores.filter((_, i) => i !== index));
 
-    // NUEVO HANDLER JERÁRQUICO
     const handleListaChange = (setter, lista, index, campo, valor) => {
         const nueva = [...lista];
         nueva[index] = { ...nueva[index], [campo]: valor };
@@ -263,7 +260,6 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
     const eliminarSemanaCronograma = (indexSemana) => setCronograma(cronograma.filter((_, i) => i !== indexSemana));
     const agregarActividadCrono = (indexSemana) => {
         const nuevoCrono = [...cronograma];
-        // NUEVO: La actividad creada por defecto lleva su clasificación
         nuevoCrono[indexSemana].actividades.push({ clasificacion: 'Tipo 1', tipo: 'Lección Magistral', descripcion: '', horas: '' });
         setCronograma(nuevoCrono);
     };
@@ -294,7 +290,6 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
                 "Horario tutorías": p.HorarioTutorias, "URL web": p.UrlWeb, "Grupo": p.Grupo, "Es coordinador": p.esCoordinador
             })),
             "Otros Datos": {
-                // Sanitización de objetos jerárquicos
                 "Conocimientos previos recomendados": conocimientos.filter(item => item.texto && item.texto.trim() !== '').map(item => ({ "Texto": item.texto, "Nivel": item.nivel })),
                 "Objetivos": objetivos.filter(item => item.texto && item.texto.trim() !== '').map(item => ({ "Texto": item.texto, "Nivel": item.nivel })),
                 "Contenidos": contenidos.filter(t => t.tema.trim() !== '').map(t => ({ "Tema": t.tema, "Nivel": t.nivel })),
@@ -321,7 +316,6 @@ export default function FormularioGuia({ guiaEnEdicion, limpiarEdicion }) {
         const url = idEdicion ? `${baseUrl}/api/guias/editar/${idEdicion}` : `${baseUrl}/api/guias/crear`;
         const method = idEdicion ? 'PUT' : 'POST';
 
-        // RECUPERAMOS EL TOKEN Y LO INYECTAMOS
         const token = localStorage.getItem('token');
 
         try {

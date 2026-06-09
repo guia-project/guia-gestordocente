@@ -17,8 +17,6 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/auth")
-// Añadimos los puertos de Docker para evitar bloqueos CORS en producción
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost", "http://localhost:80"})
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
