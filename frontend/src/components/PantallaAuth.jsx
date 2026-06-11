@@ -130,7 +130,7 @@ export default function PantallaAuth({ onLogin }) {
                         onClick={() => { setEsRegistro(!esRegistro); setMensaje(''); }}
                         style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', fontWeight: '600', marginTop: '8px', fontSize: '14px' }}
                     >
-                        {esRegistro ? 'Inicia sesión aquí' : 'Crea una cuenta gratis'}
+                        {esRegistro ? 'Inicia sesión aquí' : 'Crea una cuenta'}
                     </button>
                 </div>
             </div>
@@ -153,20 +153,6 @@ export default function PantallaAuth({ onLogin }) {
 
                         <p style={{ color: '#e0e0e0', lineHeight: '1.6', marginBottom: '15px', fontSize: '15px' }}>
                             Plataforma integral diseñada para que las universidades e instituciones educativas puedan crear, editar, estandarizar y gestionar sus guías docentes de manera eficiente.
-                        </p>
-
-                        <p style={{ color: '#e0e0e0', lineHeight: '1.6', marginBottom: '15px', fontSize: '15px' }}>
-                            Este portal se enmarca en el ecosistema de servicios desarrollados en el contexto del{' '}
-                            <a
-                                href="https://guia-project.github.io/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}
-                                onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
-                                onMouseOut={(e) => e.target.style.textDecoration = 'none'}
-                            >
-                                proyecto GUIA (M230020126A-AJCA)
-                            </a>.
                         </p>
 
                         <p style={{ color: '#aaa', lineHeight: '1.6', marginBottom: '30px', fontSize: '14px' }}>
