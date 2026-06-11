@@ -23,7 +23,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/guiasdocentes
       - SPRING_DATA_MONGODB_HOST=mongodb
       - SPRING_DATA_MONGODB_PORT=27017
-      - JWT_SECRET=${JWT_SECRET:-cambia_esta_clave_en_produccion}
+      - JWT_SECRET=${JWT_SECRET:-cambia_esta_clave_en_produccion_super_segura_y_muy_larga}
     depends_on:
       mongodb:
         condition: service_healthy

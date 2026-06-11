@@ -122,7 +122,17 @@ export default function PantallaAuth({ onLogin }) {
                     </p>
                 )}
 
-                <div style={{ textAlign: 'center', marginTop: '25px', paddingTop: '20px' }}>
+                {/* AVISO DE CUENTA DE PRUEBAS */}
+                {!esRegistro && (
+                    <div style={{ marginTop: '25px', padding: '15px', backgroundColor: '#2a2a2a', borderRadius: '8px', border: '1px solid #444', textAlign: 'center' }}>
+                        <p style={{ margin: 0, color: '#aaa', fontSize: '13px', lineHeight: '1.5' }}>
+                            Por motivos de testing se puede usar la cuenta de pruebas <br/>
+                            <strong style={{ color: '#e0e0e0' }}>test@test.es</strong> con password <strong style={{ color: '#e0e0e0' }}>test</strong>.
+                        </p>
+                    </div>
+                )}
+
+                <div style={{ textAlign: 'center', marginTop: '25px', paddingTop: '20px', borderTop: '1px solid #333' }}>
                     <p style={{ fontSize: '14px', color: '#888', margin: 0 }}>
                         {esRegistro ? '¿Ya tienes una cuenta?' : '¿No tienes cuenta?'}
                     </p>
@@ -145,7 +155,7 @@ export default function PantallaAuth({ onLogin }) {
                 ℹ️ Acerca del Proyecto
             </button>
 
-            {/* MODAL "ACERCA DE" ACTUALIZADO */}
+            {/* MODAL "ACERCA DE" */}
             {mostrarAbout && (
                 <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
                     <div style={{ backgroundColor: '#1e1e1e', padding: '40px', borderRadius: '12px', border: '1px solid #333', maxWidth: '500px', width: '90%', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>

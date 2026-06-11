@@ -10,7 +10,6 @@ import lombok.Data;
 @Data
 public class OtrosDatosDto {
 
-    // AHORA SON LISTAS SIMPLES
     @JsonProperty("Conocimientos previos recomendados")
     private List<ItemTextoNivel> conocimientosPrevios;
 
